@@ -10,8 +10,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.keyhive.components.KeyHiveAppBar
+import com.example.keyhive.components.ListPasswordsComponent
 
+@Preview(showBackground = true)
 @Composable
 fun HomeScreen(){
     Scaffold(
@@ -19,7 +22,7 @@ fun HomeScreen(){
         topBar = {KeyHiveAppBar(title = "Key Hive")}
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
-
+            ListPasswordsComponent()
         }
 
     }
