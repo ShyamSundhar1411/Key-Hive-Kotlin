@@ -16,21 +16,23 @@ import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.keyhive.screens.HomeScreen
 import com.example.keyhive.ui.theme.KeyHiveTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             KeyHiveTheme(darkTheme = false) {
-                KeyHiveApplication()
+                KeyHiveApp()
             }
         }
     }
 }
 
 @Composable
-fun KeyHiveApplication () {
+fun KeyHiveApp () {
     Surface(modifier = Modifier.fillMaxSize()) {
         HomeScreen()
     }
