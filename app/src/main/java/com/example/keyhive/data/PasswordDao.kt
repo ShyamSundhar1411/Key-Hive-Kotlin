@@ -21,7 +21,7 @@ interface PasswordDao {
     suspend fun updatePassword(password: Password)
     @Delete
     suspend fun deletePassword(password: Password)
-    @Delete
+    @Query("DELETE from password_tbl")
     suspend fun deleteAllPasswords()
 
 }
