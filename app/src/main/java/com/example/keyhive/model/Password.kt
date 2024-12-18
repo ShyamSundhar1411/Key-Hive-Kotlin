@@ -10,10 +10,12 @@ import java.util.UUID
 data class Password(
     @PrimaryKey
     val id: UUID = UUID.randomUUID(),
-    @ColumnInfo(name = "name")
-    val name: String,
+    @ColumnInfo(name = "username")
+    val username: String,
     @ColumnInfo(name = "password")
     val password: String,
+    @ColumnInfo(name = "type")
+    val type: String,
     @ColumnInfo(name = "description")
     val description: String?,
     )

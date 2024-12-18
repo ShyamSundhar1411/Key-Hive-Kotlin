@@ -47,15 +47,19 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddPasswordFormComponent(modifier: Modifier = Modifier, sheetState: SheetState, scope: CoroutineScope, showBottomSheet: MutableState<Boolean>,passwordViewModel: PasswordViewModel = hiltViewModel()){
-    val nameState = rememberSaveable{mutableStateOf("")}
+    val userNameState = rememberSaveable{mutableStateOf("")}
     val passwordState = rememberSaveable{mutableStateOf("")}
     val descriptionState = rememberSaveable { mutableStateOf("") }
+    val typeState = rememberSaveable{mutableStateOf("")}
     val keyboardController = LocalSoftwareKeyboardController.current
-    val validateName = remember(nameState.value){
-        nameState.value.trim().isNotEmpty()
+    val validateName = remember(userNameState.value){
+        userNameState.value.trim().isNotEmpty()
     }
     val validatePassword = remember(passwordState.value){
         passwordState.value.trim().isNotEmpty()
+    }
+    val validateTypeState = remember(typeState.value) {
+        typeState.value.trim().isNotEmpty()
     }
     val context = LocalContext.current
 
@@ -63,13 +67,13 @@ fun AddPasswordFormComponent(modifier: Modifier = Modifier, sheetState: SheetSta
 
         Row(modifier = modifier.padding(5.dp)){
             CommonTextField(
-                valueState = nameState,
-                placeholder = "Name*",
+                valueState = userNameState,
+                placeholder = "Username*",
                 onAction = KeyboardActions{
                     if(!validateName){
                         return@KeyboardActions
                     }
-                    nameState.value = ""
+                    userNameState.value = ""
                     keyboardController?.hide()
                 }
             )
@@ -83,6 +87,19 @@ fun AddPasswordFormComponent(modifier: Modifier = Modifier, sheetState: SheetSta
                         return@KeyboardActions
                     }
                     passwordState.value = ""
+                    keyboardController?.hide()
+                }
+            )
+        }
+        Row(modifier = modifier.padding(5.dp)){
+            CommonTextField(
+                valueState = typeState,
+                placeholder = "Website/App*",
+                onAction = KeyboardActions{
+                    if(!validatePassword){
+                        return@KeyboardActions
+                    }
+                    typeState.value = ""
                     keyboardController?.hide()
                 }
             )
@@ -107,9 +124,11 @@ fun AddPasswordFormComponent(modifier: Modifier = Modifier, sheetState: SheetSta
                 onClick = {
 
                         val password = Password(
-                            name = nameState.value,
-                            password = nameState.value,
+                            username = userNameState.value,
+                            password = passwordState.value,
                             description = descriptionState.value,
+                            type = typeState.value
+
                         )
                         passwordViewModel.insertPassword(password)
                         Toast.makeText(context,"Password Added Successfully",Toast.LENGTH_SHORT).show()

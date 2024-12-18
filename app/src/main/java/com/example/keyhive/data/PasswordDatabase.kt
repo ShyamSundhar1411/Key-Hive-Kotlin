@@ -4,7 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.example.keyhive.model.Password
 
-@Database(entities = [Password::class], version = 1, exportSchema = false)
+@Database(entities = [Password::class], version = 2, exportSchema = false)
 abstract class PasswordDatabase: RoomDatabase(){
     abstract fun passwordDao(): PasswordDao
 }
