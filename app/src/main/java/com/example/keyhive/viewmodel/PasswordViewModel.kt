@@ -15,6 +15,8 @@ import javax.inject.Inject
 class PasswordViewModel @Inject constructor(private val repository: PasswordDbRepository): ViewModel(){
     private val _passwordList = MutableStateFlow<List<Password>>(emptyList())
     val passwordList = _passwordList.asStateFlow()
+    private val _selectedPassword = MutableStateFlow<Password?>(null)
+    val selectedPassword = _selectedPassword.asStateFlow()
     init{
         viewModelScope.launch{
             repository.getAllPasswords().distinctUntilChanged().collect{

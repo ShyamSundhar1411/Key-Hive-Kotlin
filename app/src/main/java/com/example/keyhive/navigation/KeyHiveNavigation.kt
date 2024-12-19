@@ -26,8 +26,8 @@ fun KeyHiveNavigation(){
               type = NavType.StringType
             })
         ){
-            backStackEntry ->
-            PasswordDetailScreen(navController = navController,backStackEntry.arguments?.getString("passwordId"))
+            val passwordId = it.arguments?.getString("passwordId")
+            PasswordDetailScreen(navController = navController,passwordId.toString())
         }
 
     }

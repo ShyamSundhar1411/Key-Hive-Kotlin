@@ -7,14 +7,23 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.keyhive.components.KeyHiveAppBar
+import com.example.keyhive.model.Password
+import com.example.keyhive.viewmodel.PasswordViewModel
 
 
 @Composable
-fun PasswordDetailScreen(navController: NavController,passwordId: String?){
+fun PasswordDetailScreen(navController: NavController,passwordId: String,passwordViewModel: PasswordViewModel = hiltViewModel()){
+    val password = passwordViewModel.passwordList.collectAsState().value.first {
+        it.id.toString() == passwordId
+    }
     Scaffold(
         topBar = {
             KeyHiveAppBar(
@@ -29,6 +38,8 @@ fun PasswordDetailScreen(navController: NavController,passwordId: String?){
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding), contentAlignment = Alignment.Center) {
             Text("Password Details Screen")
+            Text(password.username)
+
         }
     }
 
