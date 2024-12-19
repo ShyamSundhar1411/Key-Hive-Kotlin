@@ -1,6 +1,7 @@
 package com.example.keyhive.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,19 +40,22 @@ fun PasswordCardComponent(
         password = "mySecurePassword",
         type = "Personal",
         description = "Personal account for testing."
-    )
+    ),
+    onItemClick: (String) -> Unit = {}
 ) {
     val showPassword = remember { mutableStateOf(false) }
 
     OutlinedCard(
         modifier = modifier
             .padding(8.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable { onItemClick(password.id.toString()) },
         elevation = CardDefaults.cardElevation(8.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+
     ) {
         Column(
             modifier = Modifier

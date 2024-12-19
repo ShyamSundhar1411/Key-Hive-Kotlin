@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.keyhive.navigation.KeyHiveNavigation
 import com.example.keyhive.screens.HomeScreen
 import com.example.keyhive.ui.theme.KeyHiveTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,6 +35,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun KeyHiveApp () {
     Surface(modifier = Modifier.fillMaxSize()) {
-        HomeScreen()
+        KeyHiveNavigation()
     }
 }
