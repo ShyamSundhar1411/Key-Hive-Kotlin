@@ -15,8 +15,6 @@ import javax.inject.Inject
 class PasswordViewModel @Inject constructor(private val repository: PasswordDbRepository): ViewModel(){
     private val _passwordList = MutableStateFlow<List<Password>>(emptyList())
     val passwordList = _passwordList.asStateFlow()
-    private val _selectedPassword = MutableStateFlow<Password?>(null)
-    val selectedPassword = _selectedPassword.asStateFlow()
     init{
         viewModelScope.launch{
             repository.getAllPasswords().distinctUntilChanged().collect{
@@ -40,7 +38,5 @@ class PasswordViewModel @Inject constructor(private val repository: PasswordDbRe
     fun deleteAllPasswords() = viewModelScope.launch{
         repository.deleteAllPasswords()
     }
-    fun getPasswordById(id: String) = viewModelScope.launch{
-        repository.getPasswordById(id)
-    }
+
 }

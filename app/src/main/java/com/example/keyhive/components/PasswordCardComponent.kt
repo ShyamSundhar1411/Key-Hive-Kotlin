@@ -111,7 +111,7 @@ fun PasswordCardComponent(
 
             if (password.description?.isNotEmpty() == true) {
                 Text(
-                        text = password.description,
+                        text = password.description!!,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.padding(top = 4.dp)

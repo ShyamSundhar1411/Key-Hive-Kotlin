@@ -14,16 +14,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.keyhive.components.EditPasswordFormComponent
 import com.example.keyhive.components.KeyHiveAppBar
 import com.example.keyhive.model.Password
 import com.example.keyhive.viewmodel.PasswordViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
 
 
 @Composable
 fun PasswordDetailScreen(navController: NavController,passwordId: String,passwordViewModel: PasswordViewModel = hiltViewModel()){
-    val password = passwordViewModel.passwordList.collectAsState().value.first {
-        it.id.toString() == passwordId
-    }
+    val password = passwordViewModel.passwordList.collectAsState().value.firstOrNull { it.id.toString() == passwordId }
     Scaffold(
         topBar = {
             KeyHiveAppBar(
@@ -37,10 +39,10 @@ fun PasswordDetailScreen(navController: NavController,passwordId: String,passwor
         }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding), contentAlignment = Alignment.Center) {
-            Text("Password Details Screen")
-            Text(password.username)
+            if(password != null){
+                EditPasswordFormComponent(password = password, navController = navController)
+            }
 
         }
     }
-
 }

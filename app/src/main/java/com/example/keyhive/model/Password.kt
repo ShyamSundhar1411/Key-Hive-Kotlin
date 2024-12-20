@@ -11,11 +11,11 @@ data class Password(
     @PrimaryKey
     val id: UUID = UUID.randomUUID(),
     @ColumnInfo(name = "username")
-    val username: String,
+    var username: String,
     @ColumnInfo(name = "password")
-    val password: String,
+    var password: String,
     @ColumnInfo(name = "type")
-    val type: String,
+    var type: String,
     @ColumnInfo(name = "description")
-    val description: String?,
+    var description: String?,
     )
