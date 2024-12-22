@@ -39,7 +39,4 @@ class PasswordViewModel @Inject constructor(private val repository: PasswordDbRe
     fun deleteAllPasswords() = viewModelScope.launch{
         repository.deleteAllPasswords()
     }
-    fun exportPasswordsToCsv() : File?{
-
-    }
 }
