@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.ImportExport
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -91,8 +92,8 @@ fun ShowDropDownMenu(
     }
     val items = listOf(
         mapOf(
-            "Delete All Passwords" to Icons.Default.Delete,
-
+            "Delete All" to Icons.Default.Delete,
+            "Export to CSV" to Icons.Filled.ImportExport,
             )
     )
     Column(

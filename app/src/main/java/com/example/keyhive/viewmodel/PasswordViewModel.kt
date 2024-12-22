@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,5 +39,7 @@ class PasswordViewModel @Inject constructor(private val repository: PasswordDbRe
     fun deleteAllPasswords() = viewModelScope.launch{
         repository.deleteAllPasswords()
     }
+    fun exportPasswordsToCsv() : File?{
 
+    }
 }
