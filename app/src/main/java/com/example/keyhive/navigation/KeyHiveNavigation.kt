@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.keyhive.components.BiometricAuthComponent
 import com.example.keyhive.routes.Routes
 import com.example.keyhive.screens.HomeScreen
 import com.example.keyhive.screens.PasswordDetailScreen
@@ -15,8 +16,11 @@ fun KeyHiveNavigation(){
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = Routes.HomeScreen.name
+        startDestination = Routes.BiometricScreen.name
     ){
+        composable(Routes.BiometricScreen.name){
+            BiometricAuthComponent(navController)
+        }
         composable(Routes.HomeScreen.name){
             HomeScreen(navController)
         }

@@ -34,8 +34,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.keyhive.exportPasswordsToCSV
-import com.example.keyhive.readCSVAndLogIt
+import com.example.keyhive.utils.exportPasswordsToCSV
 import com.example.keyhive.viewmodel.PasswordViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -140,7 +139,7 @@ fun ShowDropDownMenu(
                         expanded.value = false
                         showDialog.value = false
                         when (label) {
-                            "Delete All Passwords" -> passwordViewModel.deleteAllPasswords()
+                            "Delete All" -> passwordViewModel.deleteAllPasswords()
                             "Export to CSV" -> {
                                 val csvFile = exportPasswordsToCSV(
                                     context = navController.context,

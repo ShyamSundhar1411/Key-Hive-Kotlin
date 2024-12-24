@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     implementation(libs.extended.icons)
+    implementation(libs.androidx.biometric)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -77,5 +78,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     ksp(libs.hilt.compiler)
     ksp(libs.room.compiler)
+
 
 }

@@ -6,8 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 
 @Composable
-fun ShowToastComponent(context: Context,showIt: MutableState<Boolean>,message: String){
-    if(showIt.value){
-        Toast.makeText(context,message,Toast.LENGTH_SHORT).show()
-    }
+fun ShowToastComponent(context: Context,message: String){
+
+    Toast.makeText(context,message,Toast.LENGTH_SHORT).show()
+
 }
