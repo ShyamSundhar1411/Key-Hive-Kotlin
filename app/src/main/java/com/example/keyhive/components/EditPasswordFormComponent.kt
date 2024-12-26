@@ -44,7 +44,7 @@ fun EditPasswordFormComponent(modifier: Modifier = Modifier, password: Password,
     val descriptionState = rememberSaveable { mutableStateOf(password.description ?: "") }
     val typeState = rememberSaveable{mutableStateOf(password.type)}
     val keyboardController = LocalSoftwareKeyboardController.current
-    val validateName = remember(userNameState.value){
+    val validateUserName = remember(userNameState.value){
         userNameState.value.trim().isNotEmpty()
     }
     val validatePassword = remember(passwordState.value){
@@ -62,7 +62,7 @@ fun EditPasswordFormComponent(modifier: Modifier = Modifier, password: Password,
                 valueState = userNameState,
                 placeholder = "Username*",
                 onAction = KeyboardActions{
-                    if(!validateName){
+                    if(!validateUserName){
                         return@KeyboardActions
                     }
                     userNameState.value = ""
@@ -114,14 +114,20 @@ fun EditPasswordFormComponent(modifier: Modifier = Modifier, password: Password,
         Row(modifier = modifier.fillMaxWidth().padding(start = 20.dp,end = 10.dp)){
             Button(
                 onClick = {
-
-                    password.username = userNameState.value
-                    password.password = CryptoUtils().encrypt(passwordState.value)
-                    password.description = descriptionState.value
-                    password.type = typeState.value
-                    passwordViewModel.updatePassword(password)
-                    Toast.makeText(context,"Password Edited Successfully",Toast.LENGTH_SHORT).show()
-                    navController.popBackStack()
+                    if(validatePassword && validateUserName && validateTypeState) {
+                        password.username = userNameState.value
+                        password.password = CryptoUtils().encrypt(passwordState.value)
+                        password.description = descriptionState.value
+                        password.type = typeState.value
+                        passwordViewModel.updatePassword(password)
+                        Toast.makeText(context, "Password Edited Successfully", Toast.LENGTH_SHORT)
+                            .show()
+                        navController.popBackStack()
+                    }
+                    else{
+                        Toast.makeText(context, "Please fill all the fields", Toast.LENGTH_SHORT)
+                            .show()
+                    }
 
                 },
                 modifier = modifier.padding(5.dp)
