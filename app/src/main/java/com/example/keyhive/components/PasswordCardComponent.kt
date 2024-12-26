@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Card
@@ -30,6 +32,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.keyhive.model.Password
+import com.example.keyhive.utils.CryptoUtils
 
 @Preview(showBackground = true)
 @Composable
@@ -44,7 +47,8 @@ fun PasswordCardComponent(
     onItemClick: (String) -> Unit = {}
 ) {
     val showPassword = remember { mutableStateOf(false) }
-
+    val unHashPassword = remember { mutableStateOf(false) }
+    val passwordString = remember { mutableStateOf(password.password) }
     OutlinedCard(
         modifier = modifier
             .padding(8.dp)
@@ -84,7 +88,7 @@ fun PasswordCardComponent(
                 verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
             ) {
                 Text(
-                    text = if (showPassword.value) password.password else "*".repeat(password.password.length),
+                    text = if (showPassword.value) passwordString.value else "*".repeat(passwordString.value.length),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
@@ -106,6 +110,23 @@ fun PasswordCardComponent(
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
+                IconButton(
+                    onClick = { unHashPassword.value = !unHashPassword.value
+                        passwordString.value = if(unHashPassword.value) CryptoUtils().decrypt(password.password) else password.password
+                    }
+                ) {
+                    val icon = if (unHashPassword.value) {
+                        androidx.compose.material.icons.Icons.Filled.LockOpen
+                    } else {
+                        androidx.compose.material.icons.Icons.Filled.Lock
+                    }
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = if (unHashPassword.value) "Un hash Password" else "Hash Password",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+
             }
 
 

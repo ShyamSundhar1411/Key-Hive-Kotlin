@@ -33,13 +33,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.keyhive.model.Password
 import com.example.keyhive.ui.theme.RedA100
+import com.example.keyhive.utils.CryptoUtils
 import com.example.keyhive.viewmodel.PasswordViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditPasswordFormComponent(modifier: Modifier = Modifier, password: Password,passwordViewModel: PasswordViewModel = hiltViewModel(),navController: NavController){
     val userNameState = rememberSaveable{mutableStateOf(password.username)}
-    val passwordState = rememberSaveable{mutableStateOf(password.password)}
+    val passwordState = rememberSaveable{mutableStateOf(CryptoUtils().decrypt(password.password))}
     val descriptionState = rememberSaveable { mutableStateOf(password.description ?: "") }
     val typeState = rememberSaveable{mutableStateOf(password.type)}
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -115,7 +116,7 @@ fun EditPasswordFormComponent(modifier: Modifier = Modifier, password: Password,
                 onClick = {
 
                     password.username = userNameState.value
-                    password.password = passwordState.value
+                    password.password = CryptoUtils().encrypt(passwordState.value)
                     password.description = descriptionState.value
                     password.type = typeState.value
                     passwordViewModel.updatePassword(password)

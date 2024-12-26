@@ -78,7 +78,6 @@ fun BiometricAuthComponent(navController: NavController) {
 
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                         super.onAuthenticationSucceeded(result)
-                        Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
                         navController.navigate(Routes.HomeScreen.name){
                             popUpTo(Routes.BiometricScreen.name){
                                 inclusive = true

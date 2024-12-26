@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.keyhive.utils.exportPasswordsToCSV
+import com.example.keyhive.utils.shareCsvFile
 import com.example.keyhive.viewmodel.PasswordViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -147,7 +148,7 @@ fun ShowDropDownMenu(
                                 )
                                 if(csvFile != null){
                                     Toast.makeText(navController.context, "Passwords exported to ${csvFile.absolutePath}", Toast.LENGTH_SHORT).show()
-
+                                    shareCsvFile(context = navController.context,csvFile)
 
                                 }
                                 else{

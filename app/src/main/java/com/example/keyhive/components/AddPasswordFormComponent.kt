@@ -1,5 +1,6 @@
 package com.example.keyhive.components
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,6 +38,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.keyhive.model.Password
+import com.example.keyhive.utils.CryptoUtils
 import com.example.keyhive.viewmodel.PasswordViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -119,10 +121,11 @@ fun AddPasswordFormComponent(modifier: Modifier = Modifier, sheetState: SheetSta
         Row(modifier = modifier.fillMaxWidth().padding(start = 20.dp,end = 10.dp)){
             Button(
                 onClick = {
-
+                        val encryptedPassword = CryptoUtils().encrypt(passwordState.value)
+                        Log.d("Password",encryptedPassword)
                         val password = Password(
                             username = userNameState.value,
-                            password = passwordState.value,
+                            password = encryptedPassword,
                             description = descriptionState.value,
                             type = typeState.value
 
