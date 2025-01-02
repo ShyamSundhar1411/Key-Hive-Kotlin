@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Update
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -24,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -43,6 +45,9 @@ fun EditPasswordFormComponent(modifier: Modifier = Modifier, password: Password,
     val passwordState = rememberSaveable{mutableStateOf(CryptoUtils().decrypt(password.password))}
     val descriptionState = rememberSaveable { mutableStateOf(password.description ?: "") }
     val typeState = rememberSaveable{mutableStateOf(password.type)}
+    val favoriteState = rememberSaveable() {
+        mutableStateOf(password.isFavorite)
+    }
     val keyboardController = LocalSoftwareKeyboardController.current
     val validateUserName = remember(userNameState.value){
         userNameState.value.trim().isNotEmpty()
@@ -109,6 +114,23 @@ fun EditPasswordFormComponent(modifier: Modifier = Modifier, password: Password,
                 },
                 maxLines = 3,
                 singleLine = false
+            )
+        }
+        Row(
+            modifier = modifier.padding(5.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Checkbox(
+                modifier = Modifier.padding(5.dp),
+                checked = favoriteState.value,
+                onCheckedChange = {
+                    favoriteState.value = it
+                    password.isFavorite = it
+                }
+            )
+            Text(
+                text = "Add to Favorites",
+                modifier = Modifier.padding(5.dp)
             )
         }
         Row(modifier = modifier.fillMaxWidth().padding(start = 20.dp,end = 10.dp)){

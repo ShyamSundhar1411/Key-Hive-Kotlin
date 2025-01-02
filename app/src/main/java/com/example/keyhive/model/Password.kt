@@ -18,4 +18,6 @@ data class Password(
     var type: String,
     @ColumnInfo(name = "description")
     var description: String?,
+    @ColumnInfo(name = "is_favorite")
+    var isFavorite: Boolean = false
     )
