@@ -13,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.example.keyhive.LocalActivity
@@ -55,9 +56,10 @@ fun BiometricAuthComponent(navController: NavController) {
     val biometricManager = BiometricManager.from(context)
     LaunchedEffect(key1 = resultCode.intValue) {
         biometricManager.checkExistence(onSuccess = {
+
             val biometricPromptInfo =
                 BiometricPrompt.PromptInfo.Builder().setTitle("KeyHive Authenticator")
-                    .setSubtitle("Authenticate")
+                    .setSubtitle("Unlock to use KeyHive")
                     .setAllowedAuthenticators(it or BiometricManager.Authenticators.DEVICE_CREDENTIAL).build()
             val biometricPrompt = BiometricPrompt(
                 activity,
@@ -68,7 +70,7 @@ fun BiometricAuthComponent(navController: NavController) {
                         errString: CharSequence
                     ) {
                         super.onAuthenticationError(errorCode, errString)
-                        Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show()
+                        navController.navigate(Routes.HomeScreen.name)
                     }
 
                     override fun onAuthenticationFailed() {
