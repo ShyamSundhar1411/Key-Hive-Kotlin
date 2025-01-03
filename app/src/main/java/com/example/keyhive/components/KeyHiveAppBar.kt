@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ImportExport
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -49,6 +50,7 @@ fun KeyHiveAppBar(
     icon: ImageVector? = null,
     passwordViewModel: PasswordViewModel = hiltViewModel(),
     onButtonClicked: () -> Unit = {},
+    onSideIconClicked: () -> Unit = {},
 
     ){
     val showDialogBox = remember {
@@ -68,6 +70,13 @@ fun KeyHiveAppBar(
     },
         actions = {
             if (isMainScreen) {
+                IconButton(
+                    onClick = {
+                        onSideIconClicked.invoke()
+                    }
+                ){
+                    Icon(Icons.Default.Search, contentDescription = "Search")
+                }
                 IconButton(onClick = {
                     showDialogBox.value = !showDialogBox.value
                 }) {

@@ -22,6 +22,7 @@ import androidx.navigation.NavController
 import com.example.keyhive.components.AddPasswordFormComponent
 import com.example.keyhive.components.KeyHiveAppBar
 import com.example.keyhive.components.ListPasswordsComponent
+import com.example.keyhive.routes.Routes
 import com.example.keyhive.viewmodel.PasswordViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,7 +37,10 @@ fun HomeScreen(navController: NavController, passwordViewModel: PasswordViewMode
             KeyHiveAppBar(
                 title = "Key Hive",
                 navController = navController,
-                isMainScreen = true
+                isMainScreen = true,
+                onSideIconClicked = {
+                    navController.navigate(Routes.SearchScreen.name)
+                }
             )
                  },
         floatingActionButton = {

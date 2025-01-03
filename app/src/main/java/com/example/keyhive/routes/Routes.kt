@@ -4,4 +4,5 @@ enum class Routes{
     HomeScreen,
     PasswordDetailScreen,
     BiometricScreen,
+    SearchScreen,
 }

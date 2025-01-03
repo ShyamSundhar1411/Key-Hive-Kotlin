@@ -10,6 +10,7 @@ import com.example.keyhive.components.BiometricAuthComponent
 import com.example.keyhive.routes.Routes
 import com.example.keyhive.screens.HomeScreen
 import com.example.keyhive.screens.PasswordDetailScreen
+import com.example.keyhive.screens.SearchScreen
 
 @Composable
 fun KeyHiveNavigation(){
@@ -32,6 +33,11 @@ fun KeyHiveNavigation(){
         ){
             val passwordId = it.arguments?.getString("passwordId")
             PasswordDetailScreen(navController = navController,passwordId.toString())
+        }
+        composable(
+            Routes.SearchScreen.name
+        ){
+            SearchScreen(navController)
         }
 
     }
