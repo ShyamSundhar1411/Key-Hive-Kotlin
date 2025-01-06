@@ -137,7 +137,7 @@ fun EditPasswordFormComponent(modifier: Modifier = Modifier, password: Password,
                 text = "Add to Favorites",
                 modifier = Modifier.padding(5.dp)
             )
-            Text(text = "Enable Biometric Authentication?",modifier = Modifier.padding(5.dp))
+            Text(text = "Lock this password with Biometric",modifier = Modifier.padding(5.dp))
             Switch(
                 modifier = Modifier.padding(5.dp),
                 checked = enableBiometricAuthState.value,

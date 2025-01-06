@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.keyhive.model.Password
 import com.example.keyhive.utils.exportPasswordsToCSV
 import com.example.keyhive.utils.shareCsvFile
 import com.example.keyhive.viewmodel.PasswordViewModel
@@ -52,7 +53,7 @@ fun KeyHiveAppBar(
     onButtonClicked: () -> Unit = {},
     onSideIconClicked: () -> Unit = {},
 
-    ){
+    ) {
     val showDialogBox = remember {
         mutableStateOf(false)
     }
@@ -62,7 +63,8 @@ fun KeyHiveAppBar(
         ShowDropDownMenu(
             showDialog = showDialogBox,
             navController = navController,
-            passwordViewModel = passwordViewModel
+            passwordViewModel = passwordViewModel,
+            passwordList = passwordList
         )
     }
     TopAppBar(title = {
@@ -74,15 +76,15 @@ fun KeyHiveAppBar(
                     onClick = {
                         onSideIconClicked.invoke()
                     }
-                ){
+                ) {
                     Icon(Icons.Default.Search, contentDescription = "Search")
                 }
                 IconButton(onClick = {
                     showDialogBox.value = !showDialogBox.value
                 }) {
-                    if(passwordList.isNotEmpty()) {
-                        Icon(imageVector = Icons.Rounded.MoreVert, contentDescription = "More")
-                    }
+
+                    Icon(imageVector = Icons.Rounded.MoreVert, contentDescription = "More")
+
                 }
             }
         },
@@ -102,7 +104,8 @@ fun KeyHiveAppBar(
 fun ShowDropDownMenu(
     showDialog: MutableState<Boolean>,
     navController: NavController,
-    passwordViewModel: PasswordViewModel = hiltViewModel()
+    passwordViewModel: PasswordViewModel = hiltViewModel(),
+    passwordList: List<Password>
 ) {
     val expanded = remember {
         mutableStateOf(true)
@@ -111,7 +114,7 @@ fun ShowDropDownMenu(
         mapOf(
             "Delete All" to Icons.Default.Delete,
             "Export to CSV" to Icons.Filled.ImportExport,
-            )
+        )
     )
     Column(
         modifier = Modifier
@@ -130,43 +133,57 @@ fun ShowDropDownMenu(
                 .width(160.dp)
                 .background(Color.White)
         ) {
-
+            val isPasswordListEmpty = passwordList.isEmpty()
             items.forEach { item ->
                 item.forEach { (label, icon) ->
+                    val isEnabled = !isPasswordListEmpty
                     DropdownMenuItem(text = {
                         Row {
                             Icon(
                                 imageVector = icon, contentDescription = label,
-                                tint = Color.LightGray
+                                tint = if (isEnabled) Color.LightGray else Color.Gray,
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                             Text(
                                 text = label,
+                                color = if (isEnabled) Color.Black else Color.Gray
 
-                                )
+                            )
                         }
                     }, onClick = {
-                        expanded.value = false
-                        showDialog.value = false
-                        when (label) {
-                            "Delete All" -> passwordViewModel.deleteAllPasswords()
-                            "Export to CSV" -> {
-                                val csvFile = exportPasswordsToCSV(
-                                    context = navController.context,
-                                    passwords = passwordViewModel.passwordList.value
-                                )
-                                if(csvFile != null){
-                                    Toast.makeText(navController.context, "Passwords exported to ${csvFile.absolutePath}", Toast.LENGTH_SHORT).show()
-                                    shareCsvFile(context = navController.context,csvFile)
+                        if (isEnabled) {
+
+                            expanded.value = false
+                            showDialog.value = false
+                            when (label) {
+                                "Delete All" -> passwordViewModel.deleteAllPasswords()
+                                "Export to CSV" -> {
+                                    val csvFile = exportPasswordsToCSV(
+                                        context = navController.context,
+                                        passwords = passwordViewModel.passwordList.value
+                                    )
+                                    if (csvFile != null) {
+                                        Toast.makeText(
+                                            navController.context,
+                                            "Passwords exported to ${csvFile.absolutePath}",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        shareCsvFile(context = navController.context, csvFile)
+
+                                    } else {
+                                        Toast.makeText(
+                                            navController.context,
+                                            "Failed to export passwords",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
 
                                 }
-                                else{
-                                    Toast.makeText(navController.context,"Failed to export passwords", Toast.LENGTH_SHORT).show()
-                                }
-
                             }
                         }
-                    })
+                    }
+
+                    )
                 }
             }
         }

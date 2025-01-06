@@ -1,7 +1,9 @@
 package com.example.keyhive.components
 
+import android.app.Dialog
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -39,9 +41,6 @@ import java.util.Date
 @Composable
 fun AddPasswordFormComponent(
     modifier: Modifier = Modifier,
-    sheetState: SheetState,
-    scope: CoroutineScope,
-    showBottomSheet: MutableState<Boolean>,
     passwordViewModel: PasswordViewModel = hiltViewModel()
 ) {
     val userNameState = rememberSaveable { mutableStateOf("") }
@@ -119,8 +118,11 @@ fun AddPasswordFormComponent(
                 singleLine = false
             )
         }
-        Row(modifier = modifier.padding(5.dp)) {
-            Text(text = "Enable Biometric Authentication?",modifier = Modifier.padding(5.dp))
+        Row(modifier = modifier.padding(5.dp),
+            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = "Lock this password with Biometric",modifier = Modifier.padding(5.dp))
             Switch(
                 modifier = Modifier.padding(5.dp),
                 checked = enabledBiometricAuthState.value,
@@ -148,11 +150,7 @@ fun AddPasswordFormComponent(
                         passwordViewModel.insertPassword(password)
                         Toast.makeText(context, "Password Added Successfully", Toast.LENGTH_SHORT)
                             .show()
-                        scope.launch { sheetState.hide() }.invokeOnCompletion {
-                            if (!sheetState.isVisible) {
-                                showBottomSheet.value = false
-                            }
-                        }
+
                     } else {
                         Toast.makeText(context, "Please fill all the fields", Toast.LENGTH_SHORT)
                             .show()

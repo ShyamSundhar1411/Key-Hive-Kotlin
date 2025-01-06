@@ -33,7 +33,7 @@ class MainActivity : FragmentActivity() {
         enableEdgeToEdge()
         setContent {
 
-            KeyHiveTheme() {
+            KeyHiveTheme(darkTheme = false) {
                 CompositionLocalProvider(LocalActivity provides this) {
                     KeyHiveApp()
                 }
