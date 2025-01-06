@@ -1,6 +1,7 @@
 package com.example.keyhive.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,7 +21,14 @@ fun KeyHiveNavigation(){
         startDestination = Routes.BiometricScreen.name
     ){
         composable(Routes.BiometricScreen.name){
-            BiometricAuthComponent(navController)
+
+            BiometricAuthComponent(onSuccess = {
+                navController.navigate(Routes.HomeScreen.name){
+                    popUpTo(Routes.BiometricScreen.name){
+                        inclusive = true
+                    }
+                }
+            },)
         }
         composable(Routes.HomeScreen.name){
             HomeScreen(navController)

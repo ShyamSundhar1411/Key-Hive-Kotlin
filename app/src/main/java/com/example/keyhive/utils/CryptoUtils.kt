@@ -7,8 +7,8 @@ import android.util.Base64
 import android.util.Log
 
 class CryptoUtils {
-    private val secretKey = "ENCRYPTION_KEY14"
-    private val secretIV = "bVQzNFNhRkQ1Njc4"
+    private val secretKey = Constants.PRIVATE_SECRET_KEY
+    private val secretIV = Constants.PRIVATE_SECRET_IV
     fun encrypt(password:String): String{
         val iv = IvParameterSpec(this.secretIV.toByteArray())
         val keySpec = SecretKeySpec(this.secretKey.toByteArray(),"AES")
