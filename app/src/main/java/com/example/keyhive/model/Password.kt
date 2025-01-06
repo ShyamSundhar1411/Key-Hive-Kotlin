@@ -26,6 +26,6 @@ data class Password(
     @ColumnInfo(name = "created_at")
     val createdAt: Date = Date(System.currentTimeMillis()),
     @ColumnInfo(name = "updated_at")
-    val updatedAt: Date = Date(System.currentTimeMillis())
+    var updatedAt: Date = Date(System.currentTimeMillis())
     )
 

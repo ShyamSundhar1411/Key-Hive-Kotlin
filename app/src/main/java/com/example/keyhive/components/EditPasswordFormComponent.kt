@@ -20,6 +20,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +38,7 @@ import com.example.keyhive.model.Password
 import com.example.keyhive.ui.theme.RedA100
 import com.example.keyhive.utils.CryptoUtils
 import com.example.keyhive.viewmodel.PasswordViewModel
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,6 +56,9 @@ fun EditPasswordFormComponent(modifier: Modifier = Modifier, password: Password,
     }
     val validatePassword = remember(passwordState.value){
         passwordState.value.trim().isNotEmpty()
+    }
+    val enableBiometricAuthState = remember {
+        mutableStateOf(password.enableBiometricAuth)
     }
     val validateTypeState = remember(typeState.value) {
         typeState.value.trim().isNotEmpty()
@@ -132,6 +137,12 @@ fun EditPasswordFormComponent(modifier: Modifier = Modifier, password: Password,
                 text = "Add to Favorites",
                 modifier = Modifier.padding(5.dp)
             )
+            Text(text = "Enable Biometric Authentication?",modifier = Modifier.padding(5.dp))
+            Switch(
+                modifier = Modifier.padding(5.dp),
+                checked = enableBiometricAuthState.value,
+                onCheckedChange = { enableBiometricAuthState.value = it }
+            )
         }
         Row(modifier = modifier.fillMaxWidth().padding(start = 20.dp,end = 10.dp)){
             Button(
@@ -141,6 +152,8 @@ fun EditPasswordFormComponent(modifier: Modifier = Modifier, password: Password,
                         password.password = CryptoUtils().encrypt(passwordState.value)
                         password.description = descriptionState.value
                         password.type = typeState.value
+                        password.enableBiometricAuth = enableBiometricAuthState.value
+                        password.updatedAt = Date()
                         passwordViewModel.updatePassword(password)
                         Toast.makeText(context, "Password Edited Successfully", Toast.LENGTH_SHORT)
                             .show()

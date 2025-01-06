@@ -33,7 +33,7 @@ import com.example.keyhive.utils.getVersion
 
 
 @Composable
-fun BiometricAuthComponent(onSuccess: () -> Unit = {}, onError: () -> Unit = {}) {
+fun BiometricAuthComponent(onSuccess: () -> Unit = {}, onError: () -> Unit = {},title: String = "KeyHive Authenticator",subtitle: String = "Unlock to use KeyHive") {
     val context = LocalContext.current
     val activity = LocalActivity.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -91,8 +91,8 @@ fun BiometricAuthComponent(onSuccess: () -> Unit = {}, onError: () -> Unit = {})
     val biometricTrigger = {biometricManager.checkExistence(onSuccess = {
 
         val biometricPromptInfo =
-            BiometricPrompt.PromptInfo.Builder().setTitle("KeyHive Authenticator")
-                .setSubtitle("Unlock to use KeyHive")
+            BiometricPrompt.PromptInfo.Builder().setTitle(title)
+                .setSubtitle(subtitle)
                 .setAllowedAuthenticators(it or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
                 .build()
 

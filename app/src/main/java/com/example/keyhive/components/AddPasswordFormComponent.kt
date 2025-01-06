@@ -16,6 +16,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -32,6 +33,7 @@ import com.example.keyhive.utils.CryptoUtils
 import com.example.keyhive.viewmodel.PasswordViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,6 +51,9 @@ fun AddPasswordFormComponent(
     val keyboardController = LocalSoftwareKeyboardController.current
     val validateUserName = remember(userNameState.value) {
         userNameState.value.trim().isNotEmpty()
+    }
+    val enabledBiometricAuthState = rememberSaveable {
+        mutableStateOf(false)
     }
     val validatePassword = remember(passwordState.value) {
         passwordState.value.trim().isNotEmpty()
@@ -114,6 +119,14 @@ fun AddPasswordFormComponent(
                 singleLine = false
             )
         }
+        Row(modifier = modifier.padding(5.dp)) {
+            Text(text = "Enable Biometric Authentication?",modifier = Modifier.padding(5.dp))
+            Switch(
+                modifier = Modifier.padding(5.dp),
+                checked = enabledBiometricAuthState.value,
+                onCheckedChange = { enabledBiometricAuthState.value = it }
+            )
+        }
         Row(modifier = modifier
             .fillMaxWidth()
             .padding(start = 20.dp, end = 10.dp)) {
@@ -126,7 +139,10 @@ fun AddPasswordFormComponent(
                             username = userNameState.value,
                             password = encryptedPassword,
                             description = descriptionState.value,
-                            type = typeState.value
+                            type = typeState.value,
+                            enableBiometricAuth = enabledBiometricAuthState.value,
+                            createdAt = Date(),
+                            updatedAt = Date(),
 
                         )
                         passwordViewModel.insertPassword(password)
