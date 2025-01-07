@@ -3,7 +3,6 @@ package com.example.keyhive.repository
 import com.example.keyhive.data.PasswordDao
 import com.example.keyhive.model.Password
 import kotlinx.coroutines.flow.Flow
-import java.io.File
 import javax.inject.Inject
 
 class PasswordDbRepository @Inject constructor(private val passwordDao: PasswordDao) {

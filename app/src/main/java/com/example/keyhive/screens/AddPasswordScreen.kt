@@ -15,7 +15,10 @@ import com.example.keyhive.components.KeyHiveAppBar
 import com.example.keyhive.viewmodel.PasswordViewModel
 
 @Composable
-fun AddPasswordScreen(navController: NavController, passwordViewModel: PasswordViewModel = hiltViewModel()) {
+fun AddPasswordScreen(
+    navController: NavController,
+    passwordViewModel: PasswordViewModel = hiltViewModel()
+) {
     Scaffold(topBar = {
         KeyHiveAppBar(
             title = "Add Password",

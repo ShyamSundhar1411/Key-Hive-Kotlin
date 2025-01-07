@@ -1,6 +1,6 @@
 package com.example.keyhive.routes
 
-enum class Routes{
+enum class Routes {
     HomeScreen,
     PasswordDetailScreen,
     BiometricScreen,

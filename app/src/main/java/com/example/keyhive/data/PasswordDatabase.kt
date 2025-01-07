@@ -8,7 +8,7 @@ import com.example.keyhive.converters.UUIDConverter
 import com.example.keyhive.model.Password
 
 @Database(entities = [Password::class], version = 5, exportSchema = false)
-@TypeConverters(UUIDConverter::class,DateConverter::class)
-abstract class PasswordDatabase: RoomDatabase(){
+@TypeConverters(UUIDConverter::class, DateConverter::class)
+abstract class PasswordDatabase : RoomDatabase() {
     abstract fun passwordDao(): PasswordDao
 }

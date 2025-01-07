@@ -8,7 +8,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -23,8 +22,8 @@ import com.example.keyhive.components.SearchFormComponent
 import com.example.keyhive.viewmodel.SearchViewModel
 
 @Composable
-fun SearchScreen(navController: NavController,searchViewModel: SearchViewModel = hiltViewModel()){
-    Scaffold (
+fun SearchScreen(navController: NavController, searchViewModel: SearchViewModel = hiltViewModel()) {
+    Scaffold(
         topBar = {
             KeyHiveAppBar(
                 title = "Search",
@@ -36,18 +35,22 @@ fun SearchScreen(navController: NavController,searchViewModel: SearchViewModel =
                 }
             )
         }
-    ){
-        Surface(modifier = Modifier.padding(it)){
-            Column(modifier = Modifier.padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+    ) {
+        Surface(modifier = Modifier.padding(it)) {
+            Column(
+                modifier = Modifier.padding(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
                 SearchFormComponent()
 
                 val isSearching by searchViewModel.isSearching.collectAsState()
-                if(isSearching){
+                if (isSearching) {
                     CircularProgressIndicator(modifier = Modifier.padding(16.dp))
-                }
-                else{
-                    val filteredPasswordList = searchViewModel.filteredPasswords.collectAsState().value
-                    ListPasswordsComponent(modifier = Modifier,filteredPasswordList,navController)
+                } else {
+                    val filteredPasswordList =
+                        searchViewModel.filteredPasswords.collectAsState().value
+                    ListPasswordsComponent(modifier = Modifier, filteredPasswordList, navController)
 
 
                 }

@@ -12,7 +12,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SearchViewModel @Inject constructor(private val repository: PasswordDbRepository): ViewModel() {
+class SearchViewModel @Inject constructor(private val repository: PasswordDbRepository) :
+    ViewModel() {
     private val _searchText = MutableStateFlow("")
     val searchText = _searchText.asStateFlow()
     private val _isSearching = MutableStateFlow(false)
@@ -21,33 +22,39 @@ class SearchViewModel @Inject constructor(private val repository: PasswordDbRepo
     private var allPasswords: List<Password> = emptyList()
 
     val filteredPasswords = _filteredPasswords.asStateFlow()
+
     init {
         viewModelScope.launch {
-            repository.getAllPasswords().collect{
-                if(it.isEmpty()){
+            repository.getAllPasswords().collect {
+                if (it.isEmpty()) {
                     allPasswords = emptyList()
-                }else{
+                } else {
                     allPasswords = it
                 }
             }
-            filterPasswords(allPasswords,_searchText.value)
+            filterPasswords(allPasswords, _searchText.value)
         }
     }
-    fun updateSearchQuery(query: String){
+
+    fun updateSearchQuery(query: String) {
         _searchText.value = query
         _isSearching.value = query.isNotEmpty()
-        viewModelScope.launch{
-            filterPasswords(allPasswords,query)
+        viewModelScope.launch {
+            filterPasswords(allPasswords, query)
         }
 
     }
-    private suspend fun filterPasswords(passwords:List<Password>,query: String){
+
+    private suspend fun filterPasswords(passwords: List<Password>, query: String) {
         delay(500)
-        _filteredPasswords.value = if(query.isEmpty()){
+        _filteredPasswords.value = if (query.isEmpty()) {
             passwords
-        }else{
+        } else {
             passwords.filter {
-                (it.username.contains(query,ignoreCase = true)) || (it.type.contains(query,ignoreCase = true))
+                (it.username.contains(query, ignoreCase = true)) || (it.type.contains(
+                    query,
+                    ignoreCase = true
+                ))
             }
         }
 

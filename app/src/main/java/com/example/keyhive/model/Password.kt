@@ -1,6 +1,5 @@
 package com.example.keyhive.model
 
-import androidx.compose.runtime.Composable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -27,5 +26,5 @@ data class Password(
     val createdAt: Date = Date(System.currentTimeMillis()),
     @ColumnInfo(name = "updated_at")
     var updatedAt: Date = Date(System.currentTimeMillis())
-    )
+)
 

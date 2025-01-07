@@ -1,6 +1,5 @@
 package com.example.keyhive.components
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,15 +12,11 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -52,7 +47,7 @@ fun AddPasswordFormComponent(
     val descriptionState = rememberSaveable { mutableStateOf("") }
     val typeState = rememberSaveable { mutableStateOf("") }
     val enableBiometricAuthState = rememberSaveable { mutableStateOf(false) }
-    val isFavorite = rememberSaveable { mutableStateOf(false)}
+    val isFavorite = rememberSaveable { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
     val context = LocalContext.current
 
@@ -101,7 +96,9 @@ fun AddPasswordFormComponent(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Row(
-                modifier = modifier.fillMaxWidth().padding(5.dp),
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(5.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 FilterChip(

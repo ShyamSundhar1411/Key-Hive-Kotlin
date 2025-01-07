@@ -1,7 +1,6 @@
 package com.example.keyhive.components
 
 
-import android.provider.CalendarContract.Colors
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,19 +11,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Update
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -41,27 +36,32 @@ import androidx.navigation.NavController
 import com.example.keyhive.model.Password
 import com.example.keyhive.routes.Routes
 import com.example.keyhive.ui.theme.RedA100
-import com.example.keyhive.ui.theme.RedA700
 import com.example.keyhive.utils.CryptoUtils
 import com.example.keyhive.viewmodel.PasswordViewModel
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditPasswordFormComponent(modifier: Modifier = Modifier, password: Password,passwordViewModel: PasswordViewModel = hiltViewModel(),navController: NavController){
-    val userNameState = rememberSaveable{mutableStateOf(password.username)}
-    val passwordState = rememberSaveable{mutableStateOf(CryptoUtils().decrypt(password.password))}
+fun EditPasswordFormComponent(
+    modifier: Modifier = Modifier,
+    password: Password,
+    passwordViewModel: PasswordViewModel = hiltViewModel(),
+    navController: NavController
+) {
+    val userNameState = rememberSaveable { mutableStateOf(password.username) }
+    val passwordState =
+        rememberSaveable { mutableStateOf(CryptoUtils().decrypt(password.password)) }
     val descriptionState = rememberSaveable { mutableStateOf(password.description ?: "") }
-    val typeState = rememberSaveable{mutableStateOf(password.type)}
-    val favoriteState = rememberSaveable() {
+    val typeState = rememberSaveable { mutableStateOf(password.type) }
+    val favoriteState = rememberSaveable {
         mutableStateOf(password.isFavorite)
     }
 
     val keyboardController = LocalSoftwareKeyboardController.current
-    val validateUserName = remember(userNameState.value){
+    val validateUserName = remember(userNameState.value) {
         userNameState.value.trim().isNotEmpty()
     }
-    val validatePassword = remember(passwordState.value){
+    val validatePassword = remember(passwordState.value) {
         passwordState.value.trim().isNotEmpty()
     }
     val enableBiometricAuthState = remember {
@@ -75,63 +75,69 @@ fun EditPasswordFormComponent(modifier: Modifier = Modifier, password: Password,
         mutableStateOf(false)
     }
 
-    Column(modifier = modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp) ){
-            CommonTextField(
-                valueState = userNameState,
-                placeholder = "Username*",
-                onAction = KeyboardActions{
-                    if(!validateUserName){
-                        return@KeyboardActions
-                    }
-                    userNameState.value = ""
-                    keyboardController?.hide()
+    Column(modifier = modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        CommonTextField(
+            valueState = userNameState,
+            placeholder = "Username*",
+            onAction = KeyboardActions {
+                if (!validateUserName) {
+                    return@KeyboardActions
                 }
-            )
+                userNameState.value = ""
+                keyboardController?.hide()
+            }
+        )
 
-            PasswordTextField(
-                valueState = passwordState,
-                placeholder = "Password*",
-                onAction = KeyboardActions{
-                    if(!validatePassword){
-                        return@KeyboardActions
-                    }
-                    passwordState.value = ""
-                    keyboardController?.hide()
+        PasswordTextField(
+            valueState = passwordState,
+            placeholder = "Password*",
+            onAction = KeyboardActions {
+                if (!validatePassword) {
+                    return@KeyboardActions
                 }
-            )
+                passwordState.value = ""
+                keyboardController?.hide()
+            }
+        )
 
 
-            CommonTextField(
-                valueState = typeState,
-                placeholder = "Website/App*",
-                onAction = KeyboardActions{
-                    if(!validatePassword){
-                        return@KeyboardActions
-                    }
-                    typeState.value = ""
-                    keyboardController?.hide()
+        CommonTextField(
+            valueState = typeState,
+            placeholder = "Website/App*",
+            onAction = KeyboardActions {
+                if (!validatePassword) {
+                    return@KeyboardActions
                 }
-            )
+                typeState.value = ""
+                keyboardController?.hide()
+            }
+        )
 
 
-            CommonTextField(
-                valueState = descriptionState,
-                placeholder = "Description",
-                onAction = KeyboardActions{
-                    if(!validatePassword){
-                        return@KeyboardActions
-                    }
-                    passwordState.value = ""
-                    keyboardController?.hide()
-                },
-                maxLines = 3,
-                singleLine = false
-            )
-        Column(modifier = modifier.padding(5.dp),
+        CommonTextField(
+            valueState = descriptionState,
+            placeholder = "Description",
+            onAction = KeyboardActions {
+                if (!validatePassword) {
+                    return@KeyboardActions
+                }
+                passwordState.value = ""
+                keyboardController?.hide()
+            },
+            maxLines = 3,
+            singleLine = false
+        )
+        Column(
+            modifier = modifier.padding(5.dp),
             horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(8.dp)){
-            Row(modifier = modifier.fillMaxWidth().padding(5.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)){
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(5.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
                 FilterChip(
                     onClick = { enableBiometricAuthState.value = !enableBiometricAuthState.value },
                     label = { Text("Lock with Biometric") },
@@ -187,12 +193,12 @@ fun EditPasswordFormComponent(modifier: Modifier = Modifier, password: Password,
             }
             FilledTonalButton(
                 onClick = {
-                    if(password.enableBiometricAuth){
+                    if (password.enableBiometricAuth) {
                         showBiometricAuthDialog.value = true
-                    }
-                    else{
+                    } else {
                         passwordViewModel.deletePassword(password)
-                        Toast.makeText(context, "Password Deleted Successfully", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Password Deleted Successfully", Toast.LENGTH_SHORT)
+                            .show()
                         navController.popBackStack()
                     }
                 },
@@ -227,7 +233,11 @@ fun EditPasswordFormComponent(modifier: Modifier = Modifier, password: Password,
             },
             onError = {
 
-                Toast.makeText(context, "Unable to Delete Password: Authentication Failed", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    "Unable to Delete Password: Authentication Failed",
+                    Toast.LENGTH_SHORT
+                ).show()
                 navController.navigate(Routes.PasswordDetailScreen.name + "/${password.id}")
                 showBiometricAuthDialog.value = false
             },

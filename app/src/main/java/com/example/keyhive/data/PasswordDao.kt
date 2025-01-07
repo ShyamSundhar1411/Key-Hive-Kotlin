@@ -13,14 +13,19 @@ import kotlinx.coroutines.flow.Flow
 interface PasswordDao {
     @Query("SELECT * from password_tbl")
     fun getAllPasswords(): Flow<List<Password>>
+
     @Query("SELECT * from password_tbl where id =:id")
     suspend fun getPasswordById(id: String): Password
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPassword(password: Password)
+
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updatePassword(password: Password)
+
     @Delete
     suspend fun deletePassword(password: Password)
+
     @Query("DELETE from password_tbl")
     suspend fun deleteAllPasswords()
 }
