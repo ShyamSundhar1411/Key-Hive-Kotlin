@@ -5,4 +5,5 @@ enum class Routes{
     PasswordDetailScreen,
     BiometricScreen,
     SearchScreen,
+    AddPasswordScreen,
 }

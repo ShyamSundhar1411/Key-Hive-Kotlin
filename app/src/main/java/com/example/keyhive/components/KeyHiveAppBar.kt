@@ -91,7 +91,7 @@ fun KeyHiveAppBar(
         navigationIcon = {
             if (icon != null) {
                 Icon(imageVector = icon, contentDescription = null,
-                    modifier = Modifier.clickable {
+                    modifier = modifier.clickable {
                         onButtonClicked.invoke()
                     }
                 )

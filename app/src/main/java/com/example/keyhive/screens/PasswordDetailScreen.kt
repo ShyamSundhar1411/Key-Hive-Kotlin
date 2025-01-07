@@ -33,9 +33,10 @@ fun PasswordDetailScreen(navController: NavController,passwordId: String,passwor
                 icon = Icons.AutoMirrored.Filled.ArrowBack,
                 isMainScreen = false,
                 navController = navController,
-            ){
-                navController.popBackStack()
-            }
+                onButtonClicked = {
+                    navController.popBackStack()
+                }
+            )
         }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding), contentAlignment = Alignment.Center) {

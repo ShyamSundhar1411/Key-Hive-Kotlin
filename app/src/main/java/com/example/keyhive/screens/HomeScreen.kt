@@ -55,7 +55,7 @@ fun HomeScreen(navController: NavController, passwordViewModel: PasswordViewMode
             ExtendedFloatingActionButton(
 
                 onClick = {
-                    navController.navigate(Routes.HomeScreen.name)
+                    navController.navigate(Routes.AddPasswordScreen.name)
                 },
                 text = {
                     Text("Add New Password")

@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.keyhive.components.BiometricAuthComponent
 import com.example.keyhive.routes.Routes
+import com.example.keyhive.screens.AddPasswordScreen
 import com.example.keyhive.screens.HomeScreen
 import com.example.keyhive.screens.PasswordDetailScreen
 import com.example.keyhive.screens.SearchScreen
@@ -46,6 +47,12 @@ fun KeyHiveNavigation(){
             Routes.SearchScreen.name
         ){
             SearchScreen(navController)
+        }
+        composable(
+            Routes.AddPasswordScreen.name
+        ){
+            AddPasswordScreen(navController)
+
         }
 
     }
