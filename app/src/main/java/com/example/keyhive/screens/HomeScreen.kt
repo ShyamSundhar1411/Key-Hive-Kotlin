@@ -189,7 +189,7 @@ fun HomeScreen(
 
 
                 }
-                Text("Filter applied: ${filterType.value}")
+                Text("Filter applied: ${filterType.value}", modifier = Modifier.padding(5.dp))
                 ListPasswordsComponent(modifier = Modifier, passwordList, navController)
             }
 
