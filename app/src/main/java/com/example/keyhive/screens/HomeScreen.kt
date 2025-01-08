@@ -60,41 +60,52 @@ fun HomeScreen(
     val showFilterDialog = remember {
         mutableStateOf(false)
     }
-    val passwordList = passwordViewModel.passwordList.collectAsState().value
+    val filterType = remember {
+        mutableStateOf("All")
+    }
+    val passwordList = passwordViewModel.filteredPasswordList.collectAsState().value
     val filterDropDownItems = listOf(
         DropDownItem(
             label = "All",
             icon = Icons.Default.FormatListNumbered,
             onClick = {
                 Log.d("HomeScreen", "All filter clicked")
+                filterType.value = "All"
+                passwordViewModel.filterPasswords("All")
             },
-            isEnabled = passwordList.isNotEmpty()
+            isEnabled = true
         ),
         DropDownItem(
             label = "Sort by Oldest",
             icon = Icons.Default.ArrowDropDown,
             onClick = {
                 Log.d("HomeScreen", "Sort by Oldest filter clicked")
+                filterType.value = "Sort by Oldest"
+                passwordViewModel.filterPasswords("Sort by Oldest")
             },
-            isEnabled = passwordList.isNotEmpty()
+            isEnabled = true
         ),
         DropDownItem(
-            label = "Sort by Newest",
+            label = "Sort by Latest",
             icon = Icons.Default.ArrowDropUp,
-            isEnabled = passwordList.isNotEmpty(),
+            isEnabled = true,
             onClick = {
                 Log.d("HomeScreen", "Sort by Newest filter clicked")
+                filterType.value = "Sort by Latest"
+                passwordViewModel.filterPasswords("Sort by Latest")
             },
         ),
         DropDownItem(
             label = "Sort by Favorites",
             icon = Icons.Default.FavoriteBorder,
-            isEnabled = passwordList.isNotEmpty(),
+            isEnabled = true,
             onClick = {
                 Log.d(
                     "HomeScreen",
                     "Sort by Favorites filter clicked"
                 )
+                filterType.value = "Sort by Favorites"
+                passwordViewModel.filterPasswords("Sort by Favorites")
             }
         )
     )
@@ -178,7 +189,7 @@ fun HomeScreen(
 
 
                 }
-
+                Text("Filter applied: ${filterType.value}")
                 ListPasswordsComponent(modifier = Modifier, passwordList, navController)
             }
 
