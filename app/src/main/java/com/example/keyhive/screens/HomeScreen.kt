@@ -1,16 +1,30 @@
 package com.example.keyhive.screens
 
+import android.util.Log
+import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.FilterAlt
-import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.filled.FormatListNumbered
+import androidx.compose.material.icons.filled.ImportExport
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -25,14 +39,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.keyhive.components.DropDownComponent
 import com.example.keyhive.components.KeyHiveAppBar
 import com.example.keyhive.components.ListPasswordsComponent
+import com.example.keyhive.model.DropDownItem
 import com.example.keyhive.routes.Routes
+import com.example.keyhive.utils.exportPasswordsToCSV
+import com.example.keyhive.utils.shareCsvFile
 import com.example.keyhive.viewmodel.PasswordViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,9 +57,47 @@ fun HomeScreen(
     navController: NavController,
     passwordViewModel: PasswordViewModel = hiltViewModel()
 ) {
-    val showFilterDialog = remember{
+    val showFilterDialog = remember {
         mutableStateOf(false)
     }
+    val passwordList = passwordViewModel.passwordList.collectAsState().value
+    val filterDropDownItems = listOf(
+        DropDownItem(
+            label = "All",
+            icon = Icons.Default.FormatListNumbered,
+            onClick = {
+                Log.d("HomeScreen", "All filter clicked")
+            },
+            isEnabled = passwordList.isNotEmpty()
+        ),
+        DropDownItem(
+            label = "Sort by Oldest",
+            icon = Icons.Default.ArrowDropDown,
+            onClick = {
+                Log.d("HomeScreen", "Sort by Oldest filter clicked")
+            },
+            isEnabled = passwordList.isNotEmpty()
+        ),
+        DropDownItem(
+            label = "Sort by Newest",
+            icon = Icons.Default.ArrowDropUp,
+            isEnabled = passwordList.isNotEmpty(),
+            onClick = {
+                Log.d("HomeScreen", "Sort by Newest filter clicked")
+            },
+        ),
+        DropDownItem(
+            label = "Sort by Favorites",
+            icon = Icons.Default.FavoriteBorder,
+            isEnabled = passwordList.isNotEmpty(),
+            onClick = {
+                Log.d(
+                    "HomeScreen",
+                    "Sort by Favorites filter clicked"
+                )
+            }
+        )
+    )
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -76,16 +130,26 @@ fun HomeScreen(
         }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
-            Column(modifier = Modifier.fillMaxSize().padding(16.dp),horizontalAlignment = Alignment.Start,) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.Start,
+            ) {
 
-                val passwordList = passwordViewModel.passwordList.collectAsState().value
-                Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.Center){
-                    Row(modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(5.dp),
+
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(5.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
-                    ){
+                    ) {
                         Text(
                             text = "My Passwords",
                             style = MaterialTheme.typography.titleLarge
@@ -102,8 +166,16 @@ fun HomeScreen(
                                 contentDescription = "Filter",
                                 tint = Color.Black
                             )
+                            if (showFilterDialog.value) {
+                                DropDownComponent(
+                                    showFilterDialog,
+                                    filterDropDownItems,
+                                    dropdownWidth = 250.dp
+                                )
+                            }
                         }
                     }
+
 
                 }
 
