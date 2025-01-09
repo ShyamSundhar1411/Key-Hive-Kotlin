@@ -46,9 +46,6 @@ fun PasswordCardComponent(
     onItemClick: (String) -> Unit = {},
 
     ) {
-    val favorite = remember {
-        mutableStateOf(password.isFavorite)
-    }
     val context = LocalContext.current
     val showBiometricPrompt = remember {
         mutableStateOf(false)
@@ -86,20 +83,20 @@ fun PasswordCardComponent(
                     )
                 IconButton(
                     onClick = {
-                        favorite.value = !favorite.value
-                        password.isFavorite = favorite.value
+                        val newStatus = !password.isFavorite
+                        password.isFavorite = newStatus
                         passwordViewModel.updatePassword(password)
                     },
 
                     ) {
-                    val icon = if (favorite.value) {
+                    val icon = if (password.isFavorite) {
                         androidx.compose.material.icons.Icons.Filled.Favorite
                     } else {
                         androidx.compose.material.icons.Icons.Filled.FavoriteBorder
                     }
                     Icon(
                         imageVector = icon,
-                        contentDescription = if (favorite.value) "Favorite" else "Not Favorite",
+                        contentDescription = if (password.isFavorite) "Favorite" else "Not Favorite",
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
