@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -57,105 +58,127 @@ fun AddPasswordFormComponent(
                 typeState.value.trim().isNotEmpty()
     }
 
-    Column(
+    LazyColumn(
         modifier = modifier.padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-
-        CommonTextField(
-            valueState = userNameState,
-            placeholder = "Username*",
-            onAction = KeyboardActions { keyboardController?.hide() }
-        )
-
-
-        PasswordTextField(
-            valueState = passwordState,
-            placeholder = "Password*",
-            onAction = KeyboardActions { keyboardController?.hide() }
-        )
+        item {
+            CommonTextField(
+                valueState = userNameState,
+                placeholder = "Username*",
+                onAction = KeyboardActions { keyboardController?.hide() }
+            )
 
 
-        CommonTextField(
-            valueState = typeState,
-            placeholder = "Website/App*",
-            onAction = KeyboardActions { keyboardController?.hide() }
-        )
+            PasswordTextField(
+                valueState = passwordState,
+                placeholder = "Password*",
+                onAction = KeyboardActions { keyboardController?.hide() }
+            )
 
-        CommonTextField(
-            valueState = descriptionState,
-            placeholder = "Description",
-            maxLines = 3,
-            singleLine = false,
-            onAction = KeyboardActions { keyboardController?.hide() }
-        )
 
-        Column(
-            modifier = modifier.padding(5.dp),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Row(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(5.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            CommonTextField(
+                valueState = typeState,
+                placeholder = "Website/App*",
+                onAction = KeyboardActions { keyboardController?.hide() }
+            )
+
+            CommonTextField(
+                valueState = descriptionState,
+                placeholder = "Description",
+                maxLines = 3,
+                singleLine = false,
+                onAction = KeyboardActions { keyboardController?.hide() }
+            )
+
+            Column(
+                modifier = modifier.padding(5.dp),
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                FilterChip(
-                    onClick = { enableBiometricAuthState.value = !enableBiometricAuthState.value },
-                    label = { Text("Lock with Biometric") },
-                    selected = enableBiometricAuthState.value,
-                    leadingIcon = if (enableBiometricAuthState.value) {
-                        { Icon(imageVector = Icons.Filled.Done, contentDescription = "Done icon") }
-                    } else null
-                )
 
-                FilterChip(
-                    onClick = { isFavorite.value = !isFavorite.value },
-                    label = { Text("Add to Favorites") },
-                    selected = isFavorite.value,
-                    leadingIcon = if (isFavorite.value) {
-                        { Icon(imageVector = Icons.Filled.Done, contentDescription = "Done icon") }
-                    } else null
-                )
+                   Row(
+                       modifier = modifier
+                           .fillMaxWidth()
+                           .padding(5.dp),
+                       horizontalArrangement = Arrangement.spacedBy(10.dp)
+                   ) {
+                       FilterChip(
+                           onClick = {
+                               enableBiometricAuthState.value = !enableBiometricAuthState.value
+                           },
+                           label = { Text("Lock with Biometric") },
+                           selected = enableBiometricAuthState.value,
+                           leadingIcon = if (enableBiometricAuthState.value) {
+                               {
+                                   Icon(
+                                       imageVector = Icons.Filled.Done,
+                                       contentDescription = "Done icon"
+                                   )
+                               }
+                           } else null
+                       )
+
+                       FilterChip(
+                           onClick = { isFavorite.value = !isFavorite.value },
+                           label = { Text("Add to Favorites") },
+                           selected = isFavorite.value,
+                           leadingIcon = if (isFavorite.value) {
+                               {
+                                   Icon(
+                                       imageVector = Icons.Filled.Done,
+                                       contentDescription = "Done icon"
+                                   )
+                               }
+                           } else null
+                       )
+                   }
+
             }
 
-        }
 
+            Row(modifier = modifier.padding(start = 10.dp)) {
+                FilledTonalButton(
+                    onClick = {
+                        if (isValidForm) {
+                            val encryptedPassword = CryptoUtils().encrypt(passwordState.value)
+                            val password = Password(
+                                username = userNameState.value,
+                                password = encryptedPassword,
+                                description = descriptionState.value,
+                                type = typeState.value,
+                                enableBiometricAuth = enableBiometricAuthState.value,
+                                isFavorite = isFavorite.value,
+                                createdAt = Date(),
+                                updatedAt = Date()
+                            )
+                            passwordViewModel.insertPassword(password)
+                            Toast.makeText(
+                                context,
+                                "Password Added Successfully",
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                            navController.navigate(Routes.HomeScreen.name)
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Please fill all the fields",
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                        }
+                    },
 
-        Row(modifier = modifier.padding(start = 10.dp)) {
-            FilledTonalButton(
-                onClick = {
-                    if (isValidForm) {
-                        val encryptedPassword = CryptoUtils().encrypt(passwordState.value)
-                        val password = Password(
-                            username = userNameState.value,
-                            password = encryptedPassword,
-                            description = descriptionState.value,
-                            type = typeState.value,
-                            enableBiometricAuth = enableBiometricAuthState.value,
-                            isFavorite = isFavorite.value,
-                            createdAt = Date(),
-                            updatedAt = Date()
-                        )
-                        passwordViewModel.insertPassword(password)
-                        Toast.makeText(context, "Password Added Successfully", Toast.LENGTH_SHORT)
-                            .show()
-                        navController.navigate(Routes.HomeScreen.name)
-                    } else {
-                        Toast.makeText(context, "Please fill all the fields", Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                },
-
-                ) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = "Add Password",
-                    modifier = Modifier.size(ButtonDefaults.IconSize)
-                )
-                Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                Text(text = "Add")
+                    ) {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "Add Password",
+                        modifier = Modifier.size(ButtonDefaults.IconSize)
+                    )
+                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                    Text(text = "Add")
+                }
             }
         }
     }
