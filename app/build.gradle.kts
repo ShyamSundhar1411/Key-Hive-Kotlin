@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.keyhive"
+    namespace = "com.axionlabs.keyhive"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.keyhive"
+        applicationId = "com.axionlabs.keyhive"
         minSdk = 29
         targetSdk = 34
         versionCode = 1

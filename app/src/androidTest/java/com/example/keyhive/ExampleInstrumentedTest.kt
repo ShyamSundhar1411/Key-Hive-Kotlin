@@ -1,4 +1,4 @@
-package com.example.keyhive
+package com.axionlabs.keyhive
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.example.keyhive", appContext.packageName)
+        assertEquals("com.axionlabs.keyhive", appContext.packageName)
     }
 }

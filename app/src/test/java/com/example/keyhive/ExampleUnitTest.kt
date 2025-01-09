@@ -1,4 +1,4 @@
-package com.example.keyhive
+package com.axionlabs.keyhive
 
 import org.junit.Test
 
