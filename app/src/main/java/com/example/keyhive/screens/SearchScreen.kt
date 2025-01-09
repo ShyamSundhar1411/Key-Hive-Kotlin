@@ -1,13 +1,16 @@
 package com.example.keyhive.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -45,12 +48,25 @@ fun SearchScreen(navController: NavController, searchViewModel: SearchViewModel 
                 SearchFormComponent()
 
                 val isSearching by searchViewModel.isSearching.collectAsState()
+                val searchText by searchViewModel.searchText.collectAsState()
                 if (isSearching) {
                     CircularProgressIndicator(modifier = Modifier.padding(16.dp))
                 } else {
                     val filteredPasswordList =
                         searchViewModel.filteredPasswords.collectAsState().value
-                    ListPasswordsComponent(modifier = Modifier, filteredPasswordList, navController)
+                    if(filteredPasswordList.isEmpty() && searchText.isNotEmpty()){
+                        Box(
+                            modifier = Modifier.padding(10.dp).fillMaxSize(0.5f),
+                            contentAlignment = Alignment.Center,
+
+                            ){
+                            Text(text = "No Passwords found")
+                        }
+                    }
+                    else{
+                        ListPasswordsComponent(modifier = Modifier, filteredPasswordList, navController)
+                    }
+
 
 
                 }

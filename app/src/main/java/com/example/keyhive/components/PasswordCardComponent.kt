@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -46,6 +47,9 @@ fun PasswordCardComponent(
     onItemClick: (String) -> Unit = {},
 
     ) {
+    val favorite = remember {
+        mutableStateOf(password.isFavorite)
+    }
     val context = LocalContext.current
     val showBiometricPrompt = remember {
         mutableStateOf(false)
@@ -83,20 +87,20 @@ fun PasswordCardComponent(
                     )
                 IconButton(
                     onClick = {
-                        val newStatus = !password.isFavorite
-                        password.isFavorite = newStatus
+                        favorite.value = !favorite.value
+                        password.isFavorite = favorite.value
                         passwordViewModel.updatePassword(password)
                     },
 
                     ) {
-                    val icon = if (password.isFavorite) {
+                    val icon = if (favorite.value || password.isFavorite) {
                         androidx.compose.material.icons.Icons.Filled.Favorite
                     } else {
                         androidx.compose.material.icons.Icons.Filled.FavoriteBorder
                     }
                     Icon(
                         imageVector = icon,
-                        contentDescription = if (password.isFavorite) "Favorite" else "Not Favorite",
+                        contentDescription = if (favorite.value) "Favorite" else "Not Favorite",
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }

@@ -1,6 +1,8 @@
 package com.example.keyhive.viewmodel
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -20,6 +22,8 @@ class PasswordViewModel @Inject constructor(private val repository: PasswordDbRe
     val passwordList = _passwordList.asStateFlow()
     private val _filteredPasswordList = MutableStateFlow<List<Password>>(emptyList())
     val filteredPasswordList = _filteredPasswordList.asStateFlow()
+    private val _filterType = MutableStateFlow("All")
+    val filterType = _filterType.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -50,6 +54,7 @@ class PasswordViewModel @Inject constructor(private val repository: PasswordDbRe
         repository.deleteAllPasswords()
     }
     fun filterPasswords(filterType: String){
+        _filterType.value = filterType
         viewModelScope.launch {
             if(filterType == "Sort by Oldest"){
                 _filteredPasswordList.value = _passwordList.value.sortedBy { it.createdAt }

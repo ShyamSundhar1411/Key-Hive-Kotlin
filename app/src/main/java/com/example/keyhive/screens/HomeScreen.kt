@@ -60,9 +60,7 @@ fun HomeScreen(
     val showFilterDialog = remember {
         mutableStateOf(false)
     }
-    val filterType = remember {
-        mutableStateOf("All")
-    }
+    val filterType = passwordViewModel.filterType.collectAsState().value
     val passwordList = passwordViewModel.filteredPasswordList.collectAsState().value
     val filterDropDownItems = listOf(
         DropDownItem(
@@ -70,7 +68,7 @@ fun HomeScreen(
             icon = Icons.Default.FormatListNumbered,
             onClick = {
                 Log.d("HomeScreen", "All filter clicked")
-                filterType.value = "All"
+
                 passwordViewModel.filterPasswords("All")
             },
             isEnabled = true
@@ -80,7 +78,7 @@ fun HomeScreen(
             icon = Icons.Default.ArrowDropDown,
             onClick = {
                 Log.d("HomeScreen", "Sort by Oldest filter clicked")
-                filterType.value = "Sort by Oldest"
+
                 passwordViewModel.filterPasswords("Sort by Oldest")
             },
             isEnabled = true
@@ -91,7 +89,7 @@ fun HomeScreen(
             isEnabled = true,
             onClick = {
                 Log.d("HomeScreen", "Sort by Newest filter clicked")
-                filterType.value = "Sort by Latest"
+
                 passwordViewModel.filterPasswords("Sort by Latest")
             },
         ),
@@ -104,7 +102,7 @@ fun HomeScreen(
                     "HomeScreen",
                     "Sort by Favorites filter clicked"
                 )
-                filterType.value = "Sort by Favorites"
+
                 passwordViewModel.filterPasswords("Sort by Favorites")
             }
         )
@@ -189,12 +187,24 @@ fun HomeScreen(
 
 
                 }
-                Text("Filter applied: ${filterType.value}", modifier = Modifier.padding(5.dp))
-                ListPasswordsComponent(modifier = Modifier, passwordList, navController)
+                Text("Filter applied: $filterType", modifier = Modifier.padding(5.dp))
+                if(passwordList.isEmpty()){
+                    Box(
+                       modifier = Modifier.padding(10.dp).fillMaxSize(0.5f),
+                        contentAlignment = Alignment.Center,
+
+                    ){
+                        Text(text = "No Passwords found")
+                    }
+
+                }
+                else{
+                    ListPasswordsComponent(modifier = Modifier, passwordList, navController)
+                }
+
             }
 
 
         }
-
     }
 }
