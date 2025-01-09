@@ -63,7 +63,7 @@ More privacy-friendly best practices such as **Storage Access Framework** or **M
 
 ## Feedback
 
-We would love to hear your feedback! If you encounter any issues or have suggestions, feel free to [open an issue](#) or reach out with ideas.
+We would love to hear your feedback! If you encounter any issues or have suggestions, feel free to [open an issue](https://github.com/ShyamSundhar1411/Key-Hive-Kotlin/issues) or reach out with ideas.
 
 ---
 
