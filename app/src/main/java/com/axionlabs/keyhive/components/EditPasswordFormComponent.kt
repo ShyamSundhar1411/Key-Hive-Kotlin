@@ -181,6 +181,7 @@ fun EditPasswordFormComponent(
                             password.description = descriptionState.value
                             password.type = typeState.value
                             password.enableBiometricAuth = enableBiometricAuthState.value
+                            password.isFavorite = favoriteState.value
                             password.updatedAt = Date()
                             passwordViewModel.updatePassword(password)
                             Toast.makeText(
