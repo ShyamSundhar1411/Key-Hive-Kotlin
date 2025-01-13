@@ -27,7 +27,7 @@ KeyHive is a cloud-free password manager designed to help you securely store, ma
   Enjoy a clean, user-friendly design for smooth navigation.
 
 
-## V1.0 Release Notes
+## V1.1 Release Notes
 
 We’re excited to introduce **KeyHive v1.0**, your trusted cloud-free password manager! With KeyHive, securely store, manage, and access your passwords locally without relying on cloud services.
 
