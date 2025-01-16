@@ -62,9 +62,7 @@
         val showFilterDialog = remember {
             mutableStateOf(false)
         }
-        LaunchedEffect(Unit) {
-            passwordViewModel.loadPasswords()
-        }
+
         val filterType = passwordViewModel.filterType.collectAsState().value
         val passwordList = passwordViewModel.filteredPasswordList.collectAsState().value
 

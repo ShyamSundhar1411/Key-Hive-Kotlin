@@ -27,10 +27,9 @@
         val filteredPasswordList = _filteredPasswordList.asStateFlow()
         private val _filterType = MutableStateFlow("All")
         val filterType = _filterType.asStateFlow()
-        private val _isLoading = MutableStateFlow(false)
 
-        fun loadPasswords() = viewModelScope.launch {
-                _isLoading.value  = true
+        init {
+            viewModelScope.launch {
                 repository.getAllPasswords().distinctUntilChanged().collect {
                     if (it.isEmpty()) {
                         _passwordList.value = emptyList()
@@ -39,10 +38,9 @@
                         _passwordList.value = it
                         _filteredPasswordList.value = it
                     }
-
                 }
-            _isLoading.value = false
             }
+        }
 
         fun insertPassword(password: Password) = viewModelScope.launch {
             repository.insertPassword(password)
