@@ -1,5 +1,6 @@
 package com.axionlabs.keyhive.components
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,13 +35,18 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toFile
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.axionlabs.keyhive.model.DropDownItem
 import com.axionlabs.keyhive.model.Password
 import com.axionlabs.keyhive.utils.exportPasswordsToCSV
+import com.axionlabs.keyhive.utils.getFileFromUri
+import com.axionlabs.keyhive.utils.importPasswordsFromCSV
 import com.axionlabs.keyhive.utils.shareCsvFile
 import com.axionlabs.keyhive.viewmodel.PasswordViewModel
+import java.io.File
+import java.io.InputStream
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,6 +63,9 @@ fun KeyHiveAppBar(
 
     ) {
     val showDialogBox = remember {
+        mutableStateOf(false)
+    }
+    val showImportDialog = remember {
         mutableStateOf(false)
     }
     val passwordList = passwordViewModel.passwordList.collectAsState().value
@@ -96,6 +105,14 @@ fun KeyHiveAppBar(
                 }
             },
             isEnabled = passwordList.isNotEmpty()
+        ),
+        DropDownItem(
+            label = "Import from CSV",
+            icon = Icons.Filled.ImportExport,
+            onClick = {
+                showImportDialog.value = true
+            },
+            isEnabled = true
         )
     )
     if (showDialogBox.value) {
@@ -136,4 +153,19 @@ fun KeyHiveAppBar(
             }
         }
     )
+    if(showImportDialog.value) {
+        CSVImportDialog(
+            showImportDialog, onFileSelected = { uri ->
+                val file = getFileFromUri(uri,context)
+                if (file != null){
+                    Log.e("On File Selected",file.toString())
+                    importPasswordsFromCSV(file)
+                    Toast.makeText(context,"Passwords imported successfully",Toast.LENGTH_SHORT).show()
+                }
+                else{
+                    Toast.makeText(context,"Failed to import passwords",Toast.LENGTH_SHORT).show()
+                }
+            }
+        )
+    }
 }
