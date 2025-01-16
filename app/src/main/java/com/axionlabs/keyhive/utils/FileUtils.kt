@@ -78,8 +78,8 @@ fun importPasswordsFromCSV(file: File): List<Password>{
         var line: String? = ""
         while(reader.readLine()?.also {line = it } != null){
             val values = line!!.split(",")
-            Log.e("CSV_IMPORT_VALUE",values.size.toString())
-            if(values.size > 4){
+            Log.d("CSV_IMPORT_VALUE",values.size.toString())
+            if(values.size >= 4){
                 val password = Password(
                     type = values[0],
                     username = values[1],
@@ -99,7 +99,6 @@ fun importPasswordsFromCSV(file: File): List<Password>{
         Log.d("CSV_IMPORT", "Successfully imported ${importedPasswords.size} passwords.")
     } catch (e: Exception) {
         Log.e("CSV_IMPORT_ERROR", "Error importing passwords from CSV", e)
-        throw e
     }
     return importedPasswords
 }

@@ -1,5 +1,6 @@
 package com.axionlabs.keyhive.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -24,6 +25,8 @@ fun PasswordDetailScreen(
 ) {
     val password =
         passwordViewModel.passwordList.collectAsState().value.firstOrNull { it.id.toString() == passwordId }
+    Log.d("Password Passed ID",passwordId)
+    Log.d("Size",passwordViewModel.passwordList.collectAsState().value.size.toString())
     Scaffold(
         topBar = {
             KeyHiveAppBar(
