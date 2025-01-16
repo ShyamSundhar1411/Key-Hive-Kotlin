@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.axionlabs.keyhive.components.EditPasswordFormComponent
 import com.axionlabs.keyhive.components.KeyHiveAppBar
 import com.axionlabs.keyhive.viewmodel.PasswordViewModel
@@ -24,9 +25,11 @@ fun PasswordDetailScreen(
     passwordViewModel: PasswordViewModel = hiltViewModel()
 ) {
     val password =
-        passwordViewModel.passwordList.collectAsState().value.firstOrNull { it.id.toString() == passwordId }
+        passwordViewModel.passwordList.collectAsLazyPagingItems().itemSnapshotList.items.firstOrNull{
+            it.id.toString() == passwordId
+        }
     Log.d("Password Passed ID",passwordId)
-    Log.d("Size",passwordViewModel.passwordList.collectAsState().value.size.toString())
+
     Scaffold(
         topBar = {
             KeyHiveAppBar(

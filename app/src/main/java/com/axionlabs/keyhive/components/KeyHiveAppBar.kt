@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toFile
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.axionlabs.keyhive.model.DropDownItem
 import com.axionlabs.keyhive.model.Password
 import com.axionlabs.keyhive.utils.exportPasswordsToCSV
@@ -69,7 +70,7 @@ fun KeyHiveAppBar(
         mutableStateOf(false)
     }
 
-    val passwordList = passwordViewModel.passwordList.collectAsState().value
+    val passwordList = passwordViewModel.passwordList.collectAsLazyPagingItems()
     val context = LocalContext.current
     val dropDownItems = listOf(
         DropDownItem(
@@ -79,7 +80,7 @@ fun KeyHiveAppBar(
                 passwordViewModel.deleteAllPasswords()
                 Toast.makeText(context,"Password Deleted Successfully",Toast.LENGTH_SHORT).show()
             },
-            isEnabled = passwordList.isNotEmpty()
+            isEnabled = passwordList.itemCount > 0
         ),
         DropDownItem(
             label = "Export to CSV",
@@ -87,7 +88,7 @@ fun KeyHiveAppBar(
             onClick = {
                 val csvFile = exportPasswordsToCSV(
                     context = navController.context,
-                    passwords = passwordViewModel.passwordList.value
+                    passwords = passwordViewModel.getAllPasswords()
                 )
                 if (csvFile != null) {
                     Toast.makeText(
@@ -105,7 +106,7 @@ fun KeyHiveAppBar(
                     ).show()
                 }
             },
-            isEnabled = passwordList.isNotEmpty()
+            isEnabled = passwordList.itemCount > 0
         ),
         DropDownItem(
             label = "Import from CSV",

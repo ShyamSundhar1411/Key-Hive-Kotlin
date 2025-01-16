@@ -1,5 +1,6 @@
 package com.axionlabs.keyhive.data
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -28,4 +29,7 @@ interface PasswordDao {
 
     @Query("DELETE from password_tbl")
     suspend fun deleteAllPasswords()
+
+    @Query("SELECT * from password_tbl")
+    fun getPagedPasswords(): PagingSource<Int,Password>
 }

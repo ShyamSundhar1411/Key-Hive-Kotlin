@@ -44,6 +44,7 @@
     import androidx.compose.ui.unit.dp
     import androidx.hilt.navigation.compose.hiltViewModel
     import androidx.navigation.NavController
+    import androidx.paging.compose.collectAsLazyPagingItems
     import com.axionlabs.keyhive.components.DropDownComponent
     import com.axionlabs.keyhive.components.KeyHiveAppBar
     import com.axionlabs.keyhive.components.ListPasswordsComponent
@@ -64,8 +65,8 @@
         }
 
         val filterType = passwordViewModel.filterType.collectAsState().value
-        val passwordList = passwordViewModel.filteredPasswordList.collectAsState().value
-
+        val passwordList = passwordViewModel.passwordList.collectAsLazyPagingItems()
+        Log.d("Home Screen",passwordList.itemCount.toString())
         val filterDropDownItems = listOf(
             DropDownItem(
                 label = "All",
@@ -192,7 +193,7 @@
 
                     }
                     Text("Filter applied: $filterType", modifier = Modifier.padding(5.dp))
-                    if(passwordList.isEmpty()){
+                    if(passwordList.itemCount == 0){
                         Box(
                            modifier = Modifier.padding(10.dp).fillMaxWidth().fillMaxHeight(0.3f),
                             contentAlignment = Alignment.Center,

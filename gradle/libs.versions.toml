@@ -15,6 +15,7 @@ coroutines = "1.7.3"
 room = "2.6.1"
 icons = "1.6.7"
 biometric = "1.1.0"
+paging-version = "3.3.5"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -40,6 +41,9 @@ room-compiler = { group = "androidx.room", name = "room-compiler", version.ref =
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 extended-icons = { group = "androidx.compose.material",name = "material-icons-extended",version.ref = "icons"}
 androidx-biometric = {group = "androidx.biometric", name = "biometric", version.ref = "biometric"}
+paging-compose = {group = "androidx.paging", name = "paging-compose", version.ref = "paging-version"}
+paging-runtime = {group = "androidx.paging", name = "paging-runtime", version.ref = "paging-version"}
+room-paging = {group = "androidx.room", name = "room-paging", version.ref = "room" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

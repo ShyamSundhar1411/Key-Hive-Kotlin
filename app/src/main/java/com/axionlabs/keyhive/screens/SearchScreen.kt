@@ -63,9 +63,9 @@ fun SearchScreen(navController: NavController, searchViewModel: SearchViewModel 
                             Text(text = "No Passwords found")
                         }
                     }
-                    else{
-                        ListPasswordsComponent(modifier = Modifier, filteredPasswordList, navController)
-                    }
+//                    else{
+//                        ListPasswordsComponent(modifier = Modifier, filteredPasswordList, navController)
+//                    }
 
 
 

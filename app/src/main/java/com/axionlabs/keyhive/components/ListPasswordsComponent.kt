@@ -17,6 +17,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import com.axionlabs.keyhive.model.Password
 import com.axionlabs.keyhive.routes.Routes
 
@@ -24,7 +27,7 @@ import com.axionlabs.keyhive.routes.Routes
 @Composable
 fun ListPasswordsComponent(
     modifier: Modifier = Modifier,
-    passwords: List<Password> = emptyList(),
+    passwords: LazyPagingItems<Password>,
     navController: NavController
 ) {
     val visible = remember { mutableStateOf(false) }
@@ -34,23 +37,34 @@ fun ListPasswordsComponent(
         .padding(20.dp)) {
 
             LazyColumn {
-                itemsIndexed(passwords) { index, password ->
-                    val delayMillis = 100L*index
-                    LaunchedEffect(Unit) {
-                        visible.value = true
-                    }
-                    AnimatedVisibility(
-                        enter = slideInVertically(
-                            initialOffsetY = {100},
-                            animationSpec = tween(600,delayMillis = delayMillis.toInt())
-                        ),
-                        visible = visible.value,
+                items(
+                    passwords.itemCount,
+                    key = passwords.itemKey{password -> password.id},
+                    contentType = passwords.itemContentType { "Passwords" }
+                ){
+                    index ->
+                    val password = passwords[index]
+                    if(password != null) {
+                        val delayMillis = 100L * index
+                        LaunchedEffect(Unit) {
+                            visible.value = true
+                        }
+                        AnimatedVisibility(
+                            enter = slideInVertically(
+                                initialOffsetY = { 100 },
+                                animationSpec = tween(600, delayMillis = delayMillis.toInt())
+                            ),
+                            visible = visible.value,
 
-                        ) {
-                    PasswordCardComponent(password = password, modifier = Modifier.animateItemPlacement()) {
-                        navController.navigate(route = Routes.PasswordDetailScreen.name + "/${password.id}")
+                            ) {
+                            PasswordCardComponent(
+                                password = password,
+                                modifier = Modifier.animateItemPlacement()
+                            ) {
+                                navController.navigate(route = Routes.PasswordDetailScreen.name + "/${password.id}")
+                            }
+                        }
                     }
-                }
             }
         }
     }
