@@ -24,6 +24,7 @@
     import androidx.compose.material.icons.filled.FilterAlt
     import androidx.compose.material.icons.filled.FormatListNumbered
     import androidx.compose.material.icons.filled.ImportExport
+    import androidx.compose.material3.CircularProgressIndicator
     import androidx.compose.material3.DropdownMenu
     import androidx.compose.material3.DropdownMenuItem
     import androidx.compose.material3.ExperimentalMaterial3Api
@@ -44,6 +45,7 @@
     import androidx.compose.ui.unit.dp
     import androidx.hilt.navigation.compose.hiltViewModel
     import androidx.navigation.NavController
+    import androidx.paging.LoadState
     import androidx.paging.compose.collectAsLazyPagingItems
     import com.axionlabs.keyhive.components.DropDownComponent
     import com.axionlabs.keyhive.components.KeyHiveAppBar
@@ -66,7 +68,15 @@
 
         val filterType = passwordViewModel.filterType.collectAsState().value
         val passwordList = passwordViewModel.passwordList.collectAsLazyPagingItems()
-        Log.d("Home Screen",passwordList.itemCount.toString())
+        val refreshState = passwordList.loadState.refresh
+        val appendState = passwordList.loadState.append
+        val isRefreshing = refreshState is LoadState.Loading
+        val isAppending = appendState is LoadState.Loading
+        val isError = refreshState is LoadState.Error || appendState is LoadState.Error
+        LaunchedEffect(passwordViewModel.updateEvent) {
+            passwordList.refresh()
+        }
+        Log.d("Home Screen", passwordList.itemCount.toString())
         val filterDropDownItems = listOf(
             DropDownItem(
                 label = "All",
@@ -193,23 +203,34 @@
 
                     }
                     Text("Filter applied: $filterType", modifier = Modifier.padding(5.dp))
-                    if(passwordList.itemCount == 0){
+                    if (isRefreshing || isAppending) {
                         Box(
-                           modifier = Modifier.padding(10.dp).fillMaxWidth().fillMaxHeight(0.3f),
-                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .wrapContentSize(align = Alignment.Center)
+                                .padding(16.dp)
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    } else {
+                        if (passwordList.itemCount == 0) {
+                            Box(
+                                modifier = Modifier.padding(10.dp).fillMaxWidth()
+                                    .fillMaxHeight(0.3f),
+                                contentAlignment = Alignment.Center,
 
-                        ){
-                            Text(text = "No Passwords found")
+                                ) {
+                                Text(text = "No Passwords found")
+                            }
+
+                        } else {
+                            ListPasswordsComponent(modifier = Modifier, passwordList, navController)
                         }
 
                     }
-                    else{
-                        ListPasswordsComponent(modifier = Modifier, passwordList, navController)
-                    }
+
 
                 }
-
-
             }
         }
     }

@@ -7,7 +7,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -15,6 +18,8 @@ import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.axionlabs.keyhive.components.EditPasswordFormComponent
 import com.axionlabs.keyhive.components.KeyHiveAppBar
+import com.axionlabs.keyhive.model.Password
+import com.axionlabs.keyhive.viewmodel.PasswordDetailViewModel
 import com.axionlabs.keyhive.viewmodel.PasswordViewModel
 
 
@@ -22,14 +27,12 @@ import com.axionlabs.keyhive.viewmodel.PasswordViewModel
 fun PasswordDetailScreen(
     navController: NavController,
     passwordId: String,
-    passwordViewModel: PasswordViewModel = hiltViewModel()
+    passwordDetailViewModel: PasswordDetailViewModel = hiltViewModel()
 ) {
-    val password =
-        passwordViewModel.passwordList.collectAsLazyPagingItems().itemSnapshotList.items.firstOrNull{
-            it.id.toString() == passwordId
-        }
-    Log.d("Password Passed ID",passwordId)
-
+    val password  = passwordDetailViewModel.passwordState.collectAsState().value
+    LaunchedEffect(passwordId) {
+        passwordDetailViewModel.getPasswordById(passwordId)
+    }
     Scaffold(
         topBar = {
             KeyHiveAppBar(
