@@ -1,11 +1,15 @@
 package com.axionlabs.keyhive.viewmodel
 
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.axionlabs.keyhive.model.Password
 import com.axionlabs.keyhive.repository.PasswordDbRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -18,22 +22,11 @@ class SearchViewModel @Inject constructor(private val repository: PasswordDbRepo
     val searchText = _searchText.asStateFlow()
     private val _isSearching = MutableStateFlow(false)
     val isSearching = _isSearching.asStateFlow()
+    val allPasswords: Flow<PagingData<Password>> = repository.getPagedPasswords().cachedIn(viewModelScope)
     private val _filteredPasswords = MutableStateFlow<List<Password>>(emptyList())
-    private var allPasswords: List<Password> = emptyList()
     val filteredPasswords = _filteredPasswords.asStateFlow()
 
-    init {
-        viewModelScope.launch {
-            repository.getAllPasswords().collect {
-                if (it.isEmpty()) {
-                    allPasswords = emptyList()
-                } else {
-                    allPasswords = it
-                }
-            }
-            filterPasswords(allPasswords, _searchText.value)
-        }
-    }
+
 
     fun updateSearchQuery(query: String) {
         _searchText.value = query
@@ -44,18 +37,18 @@ class SearchViewModel @Inject constructor(private val repository: PasswordDbRepo
 
     }
 
-    private suspend fun filterPasswords(passwords: List<Password>, query: String) {
+    private suspend fun filterPasswords(passwords: Flow<PagingData<Password>>, query: String) {
         delay(500)
-        _filteredPasswords.value = if (query.isEmpty()) {
-            passwords
-        } else {
-            passwords.filter {
-                (it.username.contains(query, ignoreCase = true)) || (it.type.contains(
-                    query,
-                    ignoreCase = true
-                ))
-            }
-        }
+//        _filteredPasswords.value = if (query.isEmpty()) {
+//            passwords.collectAsState().value.
+//        } else {
+//            passwords.filter {
+//                (it.username.contains(query, ignoreCase = true)) || (it.type.contains(
+//                    query,
+//                    ignoreCase = true
+//                ))
+//            }
+//        }
 
         _isSearching.value = false
     }
