@@ -18,14 +18,23 @@ class PasswordDbRepository @Inject constructor(private val passwordDao: Password
     suspend fun deletePassword(password: Password) = passwordDao.deletePassword(password)
     suspend fun deleteAllPasswords() = passwordDao.deleteAllPasswords()
     suspend fun getPasswordById(id: String): Password = passwordDao.getPasswordById(id)
-    fun getPagedPasswords(): Flow<PagingData<Password>> {
+    fun getPagedPasswords(filterType: String): Flow<PagingData<Password>> {
         Log.d("Executing", "Executing getPagedPasswords")
+        val pagingSourceFactory = {
+            when (filterType) {
+                "All" -> passwordDao.getPagedPasswords()
+                "Sort By Latest" -> passwordDao.getPagedPasswordsByLatest()
+                "Sort By Oldest" -> passwordDao.getPagedPasswordsByOldest()
+                "Favorites" -> passwordDao.getPagedFavoritePasswords()
+                else -> {passwordDao.getPagedPasswords()}
+            }
+        }
         return Pager(
             config = PagingConfig(
                 pageSize = 20,
                 prefetchDistance = 30,
             ),
-            pagingSourceFactory = { passwordDao.getPagedPasswords() }
+            pagingSourceFactory = pagingSourceFactory
         ).flow
     }
 }

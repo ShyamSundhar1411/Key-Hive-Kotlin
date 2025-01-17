@@ -32,4 +32,13 @@ interface PasswordDao {
 
     @Query("SELECT * from password_tbl")
     fun getPagedPasswords(): PagingSource<Int,Password>
+
+    @Query("SELECT * from password_tbl ORDER BY created_at ASC")
+    fun getPagedPasswordsByOldest(): PagingSource<Int,Password>
+
+    @Query("SELECT * from password_tbl ORDER BY created_at DESC")
+    fun getPagedPasswordsByLatest(): PagingSource<Int,Password>
+
+    @Query("SELECT * from password_tbl where is_favorite = 1")
+    fun getPagedFavoritePasswords(): PagingSource<Int,Password>
 }

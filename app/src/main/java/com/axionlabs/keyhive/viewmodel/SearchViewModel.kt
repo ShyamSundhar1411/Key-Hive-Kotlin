@@ -22,7 +22,7 @@ class SearchViewModel @Inject constructor(private val repository: PasswordDbRepo
     val searchText = _searchText.asStateFlow()
     private val _isSearching = MutableStateFlow(false)
     val isSearching = _isSearching.asStateFlow()
-    val allPasswords: Flow<PagingData<Password>> = repository.getPagedPasswords().cachedIn(viewModelScope)
+    private val allPasswords: Flow<PagingData<Password>> = repository.getPagedPasswords("All").cachedIn(viewModelScope)
     private val _filteredPasswords = MutableStateFlow<List<Password>>(emptyList())
     val filteredPasswords = _filteredPasswords.asStateFlow()
 
