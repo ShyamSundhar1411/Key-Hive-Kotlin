@@ -72,10 +72,8 @@
         val appendState = passwordList.loadState.append
         val isRefreshing = refreshState is LoadState.Loading
         val isAppending = appendState is LoadState.Loading
-        val isError = refreshState is LoadState.Error || appendState is LoadState.Error
-        LaunchedEffect(passwordViewModel.updateEvent) {
-            passwordList.refresh()
-        }
+
+
         Log.d("Home Screen", passwordList.itemCount.toString())
         val filterDropDownItems = listOf(
             DropDownItem(

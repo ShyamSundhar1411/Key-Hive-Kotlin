@@ -29,15 +29,13 @@
             repository.getPagedPasswords().cachedIn(viewModelScope)
         private val _filterType = MutableStateFlow("All")
         val filterType = _filterType.asStateFlow()
-        private val _updateEvent = MutableStateFlow(false)
-        val updateEvent = _updateEvent.asStateFlow()
+
         fun insertPassword(password: Password) = viewModelScope.launch {
             repository.insertPassword(password)
         }
 
         fun updatePassword(password: Password) = viewModelScope.launch {
             repository.updatePassword(password)
-            _updateEvent.value = true
         }
 
         fun deletePassword(password: Password) = viewModelScope.launch {

@@ -20,7 +20,6 @@ class SearchViewModel @Inject constructor(private val repository: PasswordDbRepo
     val isSearching = _isSearching.asStateFlow()
     private val _filteredPasswords = MutableStateFlow<List<Password>>(emptyList())
     private var allPasswords: List<Password> = emptyList()
-
     val filteredPasswords = _filteredPasswords.asStateFlow()
 
     init {

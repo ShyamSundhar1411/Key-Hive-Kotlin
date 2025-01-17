@@ -17,4 +17,15 @@ class PasswordDetailViewModel @Inject constructor(private val repository: Passwo
     fun getPasswordById(id: String) {
         viewModelScope.launch {_password.value = repository.getPasswordById(id)}
     }
+    fun updatePassword(password: Password) = viewModelScope.launch {
+        viewModelScope.launch {
+            repository.updatePassword(password)
+        }
+    }
+    fun deletePassword(password: Password) = viewModelScope.launch {
+        viewModelScope.launch {
+            repository.deletePassword(password)
+        }
+
+    }
 }
