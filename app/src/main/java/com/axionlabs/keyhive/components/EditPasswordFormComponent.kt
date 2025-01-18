@@ -185,13 +185,14 @@ fun EditPasswordFormComponent(
                             password.isFavorite = favoriteState.value
                             password.updatedAt = Date()
                             passwordDetailViewModel.updatePassword(password)
+                            navController.navigateUp()
                             Toast.makeText(
                                 context,
                                 "Password Updated Successfully",
                                 Toast.LENGTH_SHORT
                             )
                                 .show()
-                            navController.popBackStack()
+
                         } else {
                             Toast.makeText(
                                 context,
@@ -221,13 +222,14 @@ fun EditPasswordFormComponent(
                             showBiometricAuthDialog.value = true
                         } else {
                             passwordDetailViewModel.deletePassword(password)
+                            navController.navigateUp()
                             Toast.makeText(
                                 context,
                                 "Password Deleted Successfully",
                                 Toast.LENGTH_SHORT
                             )
                                 .show()
-                            navController.popBackStack()
+
                         }
                     },
                     modifier = modifier.padding(5.dp),

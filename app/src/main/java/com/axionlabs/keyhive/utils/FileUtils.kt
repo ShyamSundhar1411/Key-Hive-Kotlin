@@ -74,6 +74,7 @@ fun importPasswordsFromCSV(file: File): List<Password>{
         val reader = fileInputStream.bufferedReader()
         val headerLine = reader.readLine() ?: throw Exception("CSV File is empty")
         val expectedHeader = "App/Service,Username,Password,Description"
+        Log.d("CSV_IMPORT_HEADER",headerLine)
         if(headerLine != expectedHeader) throw Exception("Invalid CSV format. Expected header: $expectedHeader")
         var line: String? = ""
         while(reader.readLine()?.also {line = it } != null){

@@ -29,24 +29,26 @@ class PasswordDbRepository @Inject constructor(private val passwordDao: Password
                 else -> {passwordDao.getPagedPasswords()}
             }
         }
-        return Pager(
+        val pager = Pager(
             config = PagingConfig(
                 pageSize = 20,
-                prefetchDistance = 30,
+                prefetchDistance = 10,
             ),
             pagingSourceFactory = pagingSourceFactory
         ).flow
+        return pager
     }
     fun filterPasswords(searchQuery: String): Flow<PagingData<Password>>{
         val pagingSourceFactory = {
             passwordDao.filterPasswords(searchQuery)
         }
-        return Pager(
+        val pager = Pager(
             config = PagingConfig(
                 pageSize = 20,
-                prefetchDistance = 30,
+                prefetchDistance = 10,
             ),
             pagingSourceFactory = pagingSourceFactory
         ).flow
+        return pager
     }
 }

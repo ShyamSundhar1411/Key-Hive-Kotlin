@@ -44,4 +44,5 @@ interface PasswordDao {
 
     @Query("SELECT * from password_tbl where type LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%'")
     fun filterPasswords(searchQuery: String): PagingSource<Int,Password>
+
 }

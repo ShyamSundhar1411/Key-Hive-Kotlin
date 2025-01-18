@@ -41,7 +41,7 @@ fun PasswordDetailScreen(
                 isMainScreen = false,
                 navController = navController,
                 onButtonClicked = {
-                    navController.popBackStack()
+                    navController.navigateUp()
                 }
             )
         }

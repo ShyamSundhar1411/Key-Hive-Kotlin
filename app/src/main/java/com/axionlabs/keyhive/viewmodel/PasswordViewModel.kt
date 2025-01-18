@@ -5,12 +5,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.map
 import com.axionlabs.keyhive.model.Password
 import com.axionlabs.keyhive.repository.PasswordDbRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,26 +25,26 @@ class PasswordViewModel @Inject constructor(private val repository: PasswordDbRe
 
     private val _filterType = MutableStateFlow("All")
     val filterType = _filterType.asStateFlow()
-    var passwordList: Flow<PagingData<Password>> =
-        repository.getPagedPasswords(_filterType.value).cachedIn(viewModelScope)
+    private val _passwordList = MutableStateFlow<Flow<PagingData<Password>>>(emptyFlow())
+    val passwordList = _passwordList.asStateFlow()
+    private var debounceJob: Job? = null
     fun insertPassword(password: Password) = viewModelScope.launch {
         repository.insertPassword(password)
     }
 
-    fun updatePassword(password: Password) = viewModelScope.launch {
-        repository.updatePassword(password)
+    init{
+        _passwordList.value = repository.getPagedPasswords(_filterType.value).cachedIn(viewModelScope)
     }
-
-
     fun deleteAllPasswords() = viewModelScope.launch {
         repository.deleteAllPasswords()
     }
 
     fun filterPasswords(filterQuery: String) {
-        _filterType.value = filterQuery
-        Log.e("filterQuery", filterQuery)
-        viewModelScope.launch {
-            passwordList = repository.getPagedPasswords(filterQuery).cachedIn(viewModelScope)
+        debounceJob?.cancel()
+        debounceJob = viewModelScope.launch {
+            delay(500)
+            _filterType.value = filterQuery
+            _passwordList.value = repository.getPagedPasswords(filterQuery).cachedIn(viewModelScope)
         }
     }
 
@@ -61,6 +66,13 @@ class PasswordViewModel @Inject constructor(private val repository: PasswordDbRe
 
         }
         return passwords
+    }
+
+    fun updatePassword(password: Password) {
+        viewModelScope.launch {
+            repository.updatePassword(password)
+
+        }
     }
 
 }

@@ -26,6 +26,5 @@ class PasswordDetailViewModel @Inject constructor(private val repository: Passwo
         viewModelScope.launch {
             repository.deletePassword(password)
         }
-
     }
 }

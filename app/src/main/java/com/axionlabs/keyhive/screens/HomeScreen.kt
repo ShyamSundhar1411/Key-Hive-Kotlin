@@ -55,14 +55,10 @@ fun HomeScreen(
     }
 
     val filterType = passwordViewModel.filterType.collectAsState().value
-    val passwordList = passwordViewModel.passwordList.collectAsLazyPagingItems()
-    val refreshState = passwordList.loadState.refresh
-    val appendState = passwordList.loadState.append
-    val isRefreshing = refreshState is LoadState.Loading
-    val isAppending = appendState is LoadState.Loading
 
 
-    Log.d("Home Screen", passwordList.itemCount.toString())
+
+
     val filterDropDownItems = listOf(
         DropDownItem(
             label = "All",
@@ -189,14 +185,22 @@ fun HomeScreen(
 
                 }
                 Text("Filter applied: $filterType", modifier = Modifier.padding(5.dp))
+                val passwordList = passwordViewModel.passwordList.collectAsState().value.collectAsLazyPagingItems()
+                val refreshState = passwordList.loadState.refresh
+                val appendState = passwordList.loadState.append
+                val isRefreshing = refreshState is LoadState.Loading
+                val isAppending = appendState is LoadState.Loading
+
                 if (isRefreshing || isAppending) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .wrapContentSize(align = Alignment.Center)
-                            .padding(16.dp)
-                    ) {
-                        CircularProgressIndicator()
+                    if(passwordList.itemCount > 0) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .wrapContentSize(align = Alignment.Center)
+                                .padding(16.dp)
+                        ) {
+                            CircularProgressIndicator()
+                        }
                     }
                 } else {
                     if (passwordList.itemCount == 0) {
