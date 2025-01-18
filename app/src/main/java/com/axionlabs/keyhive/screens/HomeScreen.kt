@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -17,7 +16,6 @@ import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.FormatListNumbered
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -40,6 +38,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.axionlabs.keyhive.components.DropDownComponent
 import com.axionlabs.keyhive.components.KeyHiveAppBar
 import com.axionlabs.keyhive.components.ListPasswordsComponent
+import com.axionlabs.keyhive.components.LoaderComponent
 import com.axionlabs.keyhive.model.DropDownItem
 import com.axionlabs.keyhive.routes.Routes
 import com.axionlabs.keyhive.viewmodel.PasswordViewModel
@@ -55,10 +54,6 @@ fun HomeScreen(
     }
 
     val filterType = passwordViewModel.filterType.collectAsState().value
-
-
-
-
     val filterDropDownItems = listOf(
         DropDownItem(
             label = "All",
@@ -185,42 +180,35 @@ fun HomeScreen(
 
                 }
                 Text("Filter applied: $filterType", modifier = Modifier.padding(5.dp))
-                val passwordList = passwordViewModel.passwordList.collectAsState().value.collectAsLazyPagingItems()
+                val passwordList =
+                    passwordViewModel.passwordList.collectAsState().value.collectAsLazyPagingItems()
                 val refreshState = passwordList.loadState.refresh
                 val appendState = passwordList.loadState.append
                 val isRefreshing = refreshState is LoadState.Loading
                 val isAppending = appendState is LoadState.Loading
 
-                if (isRefreshing || isAppending) {
-                    if(passwordList.itemCount > 0) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .wrapContentSize(align = Alignment.Center)
-                                .padding(16.dp)
-                        ) {
-                            CircularProgressIndicator()
-                        }
-                    }
-                } else {
-                    if (passwordList.itemCount == 0) {
-                        Box(
-                            modifier = Modifier
-                                .padding(10.dp)
-                                .fillMaxWidth()
-                                .fillMaxHeight(0.3f),
-                            contentAlignment = Alignment.Center,
-
-                            ) {
-                            Text(text = "No Passwords found")
+                    when {
+                        isRefreshing || isAppending -> {
+                            LoaderComponent()
                         }
 
-                    } else {
-                        ListPasswordsComponent(modifier = Modifier, passwordList, navController)
+                        passwordList.itemCount == 0 -> {
+                            Box(
+                                modifier = Modifier
+                                    .padding(10.dp)
+                                    .fillMaxWidth()
+                                    .fillMaxHeight(0.3f),
+                                contentAlignment = Alignment.Center,
+
+                                ) {
+                                Text(text = "No Passwords found")
+                            }
+                        }
+
+                        else -> {
+                            ListPasswordsComponent(modifier = Modifier, passwordList, navController)
+                        }
                     }
-
-                }
-
 
             }
         }

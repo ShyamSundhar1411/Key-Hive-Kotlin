@@ -20,19 +20,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.axionlabs.keyhive.model.Password
 import com.axionlabs.keyhive.routes.Routes
+import com.axionlabs.keyhive.viewmodel.PasswordViewModel
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun ListPasswordsComponent(
     modifier: Modifier = Modifier,
     passwords: LazyPagingItems<Password>,
-    navController: NavController
+    navController: NavController,
+    passwordViewModel: PasswordViewModel = hiltViewModel()
 ) {
     Box(
         modifier = modifier
@@ -48,11 +51,27 @@ fun ListPasswordsComponent(
             ) { index ->
                 val password = passwords[index]
                 if (password != null) {
-                    PasswordCardComponent(
-                        password = password,
-                        modifier = Modifier.animateItemPlacement()
+                    val delayMillis = 10L * index
+
+                    val isVisible =
+                        passwordViewModel.passwordsVisibility.value[password.id.toString()] ?: false
+
+                    if (!isVisible) {
+                        passwordViewModel.setPasswordVisibility(password.id.toString(), true)
+                    }
+                    AnimatedVisibility(
+                        enter = slideInVertically(
+                            initialOffsetY = { 100 },
+                            animationSpec = tween(600, delayMillis = delayMillis.toInt())
+                        ),
+                        visible = isVisible
                     ) {
-                        navController.navigate(route = Routes.PasswordDetailScreen.name + "/${password.id}")
+                        PasswordCardComponent(
+                            password = password,
+                            modifier = Modifier.animateItemPlacement()
+                        ) {
+                            navController.navigate(route = Routes.PasswordDetailScreen.name + "/${password.id}")
+                        }
                     }
                 }
 

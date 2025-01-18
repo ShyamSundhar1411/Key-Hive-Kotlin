@@ -1,10 +1,12 @@
 package com.axionlabs.keyhive.viewmodel
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.map
 import com.axionlabs.keyhive.model.Password
 import com.axionlabs.keyhive.repository.PasswordDbRepository
@@ -16,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,12 +31,23 @@ class PasswordViewModel @Inject constructor(private val repository: PasswordDbRe
     private val _passwordList = MutableStateFlow<Flow<PagingData<Password>>>(emptyFlow())
     val passwordList = _passwordList.asStateFlow()
     private var debounceJob: Job? = null
+    private val _passwordsVisibility = mutableStateOf<Map<String, Boolean>>(emptyMap())
+    val passwordsVisibility = _passwordsVisibility
+    fun setPasswordVisibility(passwordId: String, isVisible: Boolean) {
+        _passwordsVisibility.value = _passwordsVisibility.value.toMutableMap().apply {
+            put(passwordId, isVisible)
+        }
+    }
+
     fun insertPassword(password: Password) = viewModelScope.launch {
         repository.insertPassword(password)
     }
 
     init{
-        _passwordList.value = repository.getPagedPasswords(_filterType.value).cachedIn(viewModelScope)
+        viewModelScope.launch {
+            _passwordList.value =
+                repository.getPagedPasswords(_filterType.value).cachedIn(viewModelScope)
+        }
     }
     fun deleteAllPasswords() = viewModelScope.launch {
         repository.deleteAllPasswords()
@@ -48,11 +62,13 @@ class PasswordViewModel @Inject constructor(private val repository: PasswordDbRe
         }
     }
 
-    fun bulkInsertPasswords(passwords: List<Password>) = viewModelScope.launch {
+    fun bulkInsertPasswords(passwords: List<Password>) {
 
-        passwords.forEach { password ->
-            repository.insertPassword(password)
+        viewModelScope.launch {
+            passwords.forEach { password ->
+                repository.insertPassword(password)
 
+            }
         }
     }
 

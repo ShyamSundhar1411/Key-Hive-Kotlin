@@ -31,6 +31,10 @@ fun SearchFormComponent(
             CommonTextField(
                 valueState = query,
                 placeholder = "Search",
+                onValueChange = {
+                    query.value = it
+                    searchViewModel.updateSearchQuery(it)
+                },
                 onAction = KeyboardActions {
                     if (!validateQuery) {
                         return@KeyboardActions
