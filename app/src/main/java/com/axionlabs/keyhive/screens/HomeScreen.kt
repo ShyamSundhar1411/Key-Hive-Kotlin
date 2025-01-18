@@ -56,8 +56,9 @@ fun HomeScreen(
     val filterType = passwordViewModel.filterType.collectAsState().value
     val passwordList =
         passwordViewModel.passwordList.collectAsState().value.collectAsLazyPagingItems()
-    val refreshState = passwordList.loadState.refresh
+
     val appendState = passwordList.loadState.append
+    val isBulkImportingInProgress = passwordViewModel.isBulkImportInProgress.collectAsState().value
     val isAppending = appendState is LoadState.Loading
     val filterDropDownItems = listOf(
         DropDownItem(
@@ -188,7 +189,9 @@ fun HomeScreen(
 
 
                 when {
-
+                    (isBulkImportingInProgress) -> {
+                        LoaderComponent()
+                    }
                     (isAppending) -> {
                         LoaderComponent()
                     }

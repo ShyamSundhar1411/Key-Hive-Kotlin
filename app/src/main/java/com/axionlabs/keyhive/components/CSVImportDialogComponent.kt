@@ -43,32 +43,51 @@ import kotlinx.coroutines.withContext
 fun CSVImportDialog(
     showDialog: MutableState<Boolean>,
     passwordViewModel: PasswordViewModel = hiltViewModel(),
-){
+) {
     val result = remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
+    val isLoading = remember { mutableStateOf(false) }
 
-    val filePickerLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) {
-        if (it != null) {
-            result.value = it
 
+    val filePickerLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) {
+            result.value = uri
             showDialog.value = false
+            isLoading.value = true
             CoroutineScope(Dispatchers.IO).launch {
-                val file = getFileFromUri(it, context)
+                val file = getFileFromUri(uri, context)
                 if (file != null) {
-                    val passwords = importPasswordsFromCSV(file)
-                    passwordViewModel.bulkInsertPasswords(passwords)
-                }
-                else{
-                    Toast.makeText(context,"Failed to Import Passwords",Toast.LENGTH_SHORT).show()
-                }
+                    val response = importPasswordsFromCSV(file)
+                    val passwords = response.passwords.map { password -> password }
 
+
+                    withContext(Dispatchers.Main) {
+                        isLoading.value = false
+                        if (passwords.isEmpty()) {
+                            val message = "Code - ${response.statusCode}: ${response.errorMessage}"
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        } else {
+                            Log.d("Passwords", passwords.toString())
+                            passwordViewModel.bulkInsertPasswords(passwords)
+                            val message = "Code - ${response.statusCode}: ${response.successMessage}"
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } else {
+
+                    withContext(Dispatchers.Main) {
+                        isLoading.value = false
+                        Toast.makeText(context, "Failed to Import Passwords", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
-            Toast.makeText(context,"Passwords Imported Successfully", Toast.LENGTH_SHORT).show()
-        }
-        else{
-            Toast.makeText(context,"No File Selected", Toast.LENGTH_SHORT).show()
+        } else {
+
+            Toast.makeText(context, "No File Selected", Toast.LENGTH_SHORT).show()
         }
     }
+
+    // Alert dialog UI for CSV import
     AlertDialog(
         onDismissRequest = { showDialog.value = false },
         title = { Text(text = "Import Passwords from CSV") },
@@ -82,18 +101,18 @@ fun CSVImportDialog(
                 Text("Column 4: Description")
                 Spacer(modifier = Modifier.height(8.dp))
                 Text("Ensure the CSV file has no extra columns or invalid data.")
+                if (isLoading.value) {
+                    // Show loading indicator while the file is being processed
+                    CircularProgressIndicator(modifier = Modifier.wrapContentWidth())
+                }
             }
-
         },
         confirmButton = {
             TextButton(
                 onClick = {
-                    Log.e("Launched","File Intent")
+                    Log.e("Launched", "File Intent")
                     filePickerLauncher.launch(arrayOf("*/*"))
-                    Log.e("File Picker",result.toString())
-
-                },
-
+                }
             ) {
                 Text("Select CSV File")
             }
@@ -102,8 +121,6 @@ fun CSVImportDialog(
             TextButton(onClick = { showDialog.value = false }) {
                 Text("Cancel")
             }
-
         }
     )
-
 }

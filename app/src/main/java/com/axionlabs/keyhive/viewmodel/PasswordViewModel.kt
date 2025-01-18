@@ -33,6 +33,8 @@ class PasswordViewModel @Inject constructor(private val repository: PasswordDbRe
     private var debounceJob: Job? = null
     private val _passwordsVisibility = mutableStateOf<Map<String, Boolean>>(emptyMap())
     val passwordsVisibility = _passwordsVisibility
+    private val _isBulkImportInProgress = MutableStateFlow(false)
+    val isBulkImportInProgress = _isBulkImportInProgress.asStateFlow()
     fun setPasswordVisibility(passwordId: String, isVisible: Boolean) {
         _passwordsVisibility.value = _passwordsVisibility.value.toMutableMap().apply {
             put(passwordId, isVisible)
@@ -63,13 +65,16 @@ class PasswordViewModel @Inject constructor(private val repository: PasswordDbRe
     }
 
     fun bulkInsertPasswords(passwords: List<Password>) {
-
+        _isBulkImportInProgress.value = true
         viewModelScope.launch {
+            delay(200)
             passwords.forEach { password ->
                 repository.insertPassword(password)
 
             }
+            _isBulkImportInProgress.value = false
         }
+
     }
 
     fun getAllPasswords(): List<Password> {
