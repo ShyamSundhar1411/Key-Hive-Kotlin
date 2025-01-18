@@ -41,4 +41,7 @@ interface PasswordDao {
 
     @Query("SELECT * from password_tbl where is_favorite = 1")
     fun getPagedFavoritePasswords(): PagingSource<Int,Password>
+
+    @Query("SELECT * from password_tbl where type LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%'")
+    fun filterPasswords(searchQuery: String): PagingSource<Int,Password>
 }

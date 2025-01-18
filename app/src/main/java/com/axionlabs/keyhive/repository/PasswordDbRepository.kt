@@ -23,11 +23,23 @@ class PasswordDbRepository @Inject constructor(private val passwordDao: Password
         val pagingSourceFactory = {
             when (filterType) {
                 "All" -> passwordDao.getPagedPasswords()
-                "Sort By Latest" -> passwordDao.getPagedPasswordsByLatest()
-                "Sort By Oldest" -> passwordDao.getPagedPasswordsByOldest()
-                "Favorites" -> passwordDao.getPagedFavoritePasswords()
+                "Sort by Latest" -> passwordDao.getPagedPasswordsByLatest()
+                "Sort by Oldest" -> passwordDao.getPagedPasswordsByOldest()
+                "Sort by Favorites" -> passwordDao.getPagedFavoritePasswords()
                 else -> {passwordDao.getPagedPasswords()}
             }
+        }
+        return Pager(
+            config = PagingConfig(
+                pageSize = 20,
+                prefetchDistance = 30,
+            ),
+            pagingSourceFactory = pagingSourceFactory
+        ).flow
+    }
+    fun filterPasswords(searchQuery: String): Flow<PagingData<Password>>{
+        val pagingSourceFactory = {
+            passwordDao.filterPasswords(searchQuery)
         }
         return Pager(
             config = PagingConfig(

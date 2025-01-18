@@ -1,5 +1,6 @@
 package com.axionlabs.keyhive.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -19,7 +20,7 @@ class PasswordViewModel @Inject constructor(private val repository: PasswordDbRe
 
     private val _filterType = MutableStateFlow("All")
     val filterType = _filterType.asStateFlow()
-    val passwordList: Flow<PagingData<Password>> =
+    var passwordList: Flow<PagingData<Password>> =
         repository.getPagedPasswords(_filterType.value).cachedIn(viewModelScope)
     fun insertPassword(password: Password) = viewModelScope.launch {
         repository.insertPassword(password)
@@ -36,6 +37,10 @@ class PasswordViewModel @Inject constructor(private val repository: PasswordDbRe
 
     fun filterPasswords(filterQuery: String) {
         _filterType.value = filterQuery
+        Log.e("filterQuery", filterQuery)
+        viewModelScope.launch {
+            passwordList = repository.getPagedPasswords(filterQuery).cachedIn(viewModelScope)
+        }
     }
 
     fun bulkInsertPasswords(passwords: List<Password>) = viewModelScope.launch {

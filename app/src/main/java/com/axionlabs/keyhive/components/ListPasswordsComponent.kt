@@ -30,8 +30,6 @@ fun ListPasswordsComponent(
     passwords: LazyPagingItems<Password>,
     navController: NavController
 ) {
-    val visible = remember { mutableStateOf(false) }
-
     Box(modifier = modifier
         .fillMaxSize()
         .padding(20.dp)) {
@@ -45,7 +43,8 @@ fun ListPasswordsComponent(
                     index ->
                     val password = passwords[index]
                     if(password != null) {
-                        val delayMillis = 100L * index
+                        val delayMillis = 10L * index
+                        val visible = remember { mutableStateOf(false) }
                         LaunchedEffect(Unit) {
                             visible.value = true
                         }
