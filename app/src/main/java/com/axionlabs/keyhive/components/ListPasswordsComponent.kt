@@ -68,10 +68,14 @@ fun ListPasswordsComponent(
                     ) {
                         PasswordCardComponent(
                             password = password,
-                            modifier = Modifier.animateItemPlacement()
-                        ) {
-                            navController.navigate(route = Routes.PasswordDetailScreen.name + "/${password.id}")
-                        }
+                            modifier = Modifier.animateItemPlacement(),
+                            onItemClick = {
+                                navController.navigate(Routes.PasswordDetailScreen.name + "/$it")
+                            },
+                            onFavoriteClick = { password ->
+                                passwordViewModel.updatePassword(password)
+                            }
+                        )
                     }
                 }
 

@@ -43,8 +43,8 @@ fun PasswordCardComponent(
         type = "Personal",
         description = "Personal account for testing."
     ),
-    passwordViewModel: PasswordViewModel = hiltViewModel(),
     onItemClick: (String) -> Unit = {},
+    onFavoriteClick: (Password) -> Unit = {}
 
     ) {
     val favorite = remember {
@@ -89,7 +89,7 @@ fun PasswordCardComponent(
                     onClick = {
                         favorite.value = !favorite.value
                         password.isFavorite = favorite.value
-                        passwordViewModel.updatePassword(password)
+                        onFavoriteClick(password)
                     },
 
                     ) {

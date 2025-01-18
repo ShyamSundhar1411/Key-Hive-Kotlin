@@ -54,6 +54,11 @@ fun HomeScreen(
     }
 
     val filterType = passwordViewModel.filterType.collectAsState().value
+    val passwordList =
+        passwordViewModel.passwordList.collectAsState().value.collectAsLazyPagingItems()
+    val refreshState = passwordList.loadState.refresh
+    val appendState = passwordList.loadState.append
+    val isAppending = appendState is LoadState.Loading
     val filterDropDownItems = listOf(
         DropDownItem(
             label = "All",
@@ -180,35 +185,29 @@ fun HomeScreen(
 
                 }
                 Text("Filter applied: $filterType", modifier = Modifier.padding(5.dp))
-                val passwordList =
-                    passwordViewModel.passwordList.collectAsState().value.collectAsLazyPagingItems()
-                val refreshState = passwordList.loadState.refresh
-                val appendState = passwordList.loadState.append
-                val isRefreshing = refreshState is LoadState.Loading
-                val isAppending = appendState is LoadState.Loading
 
-                    when {
-                        isRefreshing || isAppending -> {
-                            LoaderComponent()
-                        }
 
-                        passwordList.itemCount == 0 -> {
-                            Box(
-                                modifier = Modifier
-                                    .padding(10.dp)
-                                    .fillMaxWidth()
-                                    .fillMaxHeight(0.3f),
-                                contentAlignment = Alignment.Center,
+                when {
 
-                                ) {
-                                Text(text = "No Passwords found")
-                            }
-                        }
+                    (isAppending) -> {
+                        LoaderComponent()
+                    }
+                    passwordList.itemCount == 0 -> {
+                        Box(
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .fillMaxWidth()
+                                .fillMaxHeight(0.3f),
+                            contentAlignment = Alignment.Center,
 
-                        else -> {
-                            ListPasswordsComponent(modifier = Modifier, passwordList, navController)
+                            ) {
+                            Text(text = "No Passwords found")
                         }
                     }
+                    else -> {
+                        ListPasswordsComponent(modifier = Modifier, passwordList, navController)
+                    }
+                }
 
             }
         }
