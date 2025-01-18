@@ -1,15 +1,17 @@
 package com.axionlabs.keyhive.viewmodel
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.map
 import com.axionlabs.keyhive.model.Password
 import com.axionlabs.keyhive.repository.PasswordDbRepository
+import com.axionlabs.keyhive.utils.exportPasswordsToCSV
+import com.axionlabs.keyhive.utils.shareCsvFile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -17,8 +19,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -45,12 +45,13 @@ class PasswordViewModel @Inject constructor(private val repository: PasswordDbRe
         repository.insertPassword(password)
     }
 
-    init{
+    init {
         viewModelScope.launch {
             _passwordList.value =
                 repository.getPagedPasswords(_filterType.value).cachedIn(viewModelScope)
         }
     }
+
     fun deleteAllPasswords() = viewModelScope.launch {
         repository.deleteAllPasswords()
     }
@@ -77,16 +78,26 @@ class PasswordViewModel @Inject constructor(private val repository: PasswordDbRe
 
     }
 
-    fun getAllPasswords(): List<Password> {
-        val passwords = mutableListOf<Password>()
+    fun exportPasswordsToCSV(context: Context) {
         viewModelScope.launch {
-            repository.getAllPasswords()
-                .collect {
-                    passwords.addAll(it)
+            val passwords = repository.getAllPasswords()
+            Log.d("PasswordViewModel", "Passwords: $passwords.size")
+            if (passwords.isNotEmpty()) {
+                val csvFile = exportPasswordsToCSV(context, passwords)
+                if (csvFile != null) {
+                    Toast.makeText(
+                        context,
+                        "Passwords exported to ${csvFile.absolutePath}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    shareCsvFile(context, csvFile)
+                } else {
+                    Toast.makeText(context, "Failed to export passwords", Toast.LENGTH_SHORT).show()
                 }
-
+            } else {
+                Toast.makeText(context, "No passwords to export", Toast.LENGTH_SHORT).show()
+            }
         }
-        return passwords
     }
 
     fun updatePassword(password: Password) {

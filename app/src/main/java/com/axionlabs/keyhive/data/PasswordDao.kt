@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PasswordDao {
     @Query("SELECT * from password_tbl")
-    fun getAllPasswords(): Flow<List<Password>>
+    suspend fun getAllPasswords(): List<Password>
 
     @Query("SELECT * from password_tbl where id =:id")
     suspend fun getPasswordById(id: String): Password

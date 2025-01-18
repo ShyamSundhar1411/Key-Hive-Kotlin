@@ -72,7 +72,6 @@ fun KeyHiveAppBar(
     val showImportDialog = remember {
         mutableStateOf(false)
     }
-
     val passwordList = passwordViewModel.passwordList.collectAsState().value.collectAsLazyPagingItems()
     val context = LocalContext.current
     val dropDownItems = listOf(
@@ -89,25 +88,7 @@ fun KeyHiveAppBar(
             label = "Export to CSV",
             icon = Icons.Filled.ImportExport,
             onClick = {
-                val csvFile = exportPasswordsToCSV(
-                    context = navController.context,
-                    passwords = passwordViewModel.getAllPasswords()
-                )
-                if (csvFile != null) {
-                    Toast.makeText(
-                        navController.context,
-                        "Passwords exported to ${csvFile.absolutePath}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    shareCsvFile(context = navController.context, csvFile)
-
-                } else {
-                    Toast.makeText(
-                        navController.context,
-                        "Failed to export passwords",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+                passwordViewModel.exportPasswordsToCSV(context)
             },
             isEnabled = passwordList.itemCount > 0
         ),
