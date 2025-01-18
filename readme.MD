@@ -27,19 +27,22 @@ KeyHive is a cloud-free password manager designed to help you securely store, ma
   Enjoy a clean, user-friendly design for smooth navigation.
 
 
-## V1.1 Release Notes
+## KeyHive V2 Release Notes
 
-We’re excited to introduce **KeyHive v1.1**, your trusted cloud-free password manager! With KeyHive, securely store, manage, and access your passwords locally without relying on cloud services.
+We’re thrilled to announce **KeyHive V2**, packed with exciting new features, performance upgrades, and a smoother experience to securely manage your passwords!
 
-### What's New in V1.0:
-- **Add & Customize** passwords easily.
-- **Biometric Security** for added protection.
-- **Favorites & Sorting** for efficient management.
-- **Export as CSV** for backup.
-- **Elegant UI** for smooth navigation.
-- **Offline First** with 100% local storage.
+### What’s New in V2:
+- **Import from CSV**: Effortlessly import passwords from a CSV file for seamless transition and bulk password management.
+- **Performance Boost**: Enhanced app performance for faster operations, even with larger password vaults.
+- **Improved Security**: Upgraded encryption and biometric security for extra layers of protection.
+- **Favorites & Sorting**: Streamline your password organization with favorites and custom sorting options.
+- **Export as CSV**: Backup and export your passwords in CSV format for easy transfer and safekeeping.
+- **Refined UI**: A sleeker, more intuitive design for a better overall experience.
+- **Offline-First Approach**: All your data stays securely stored on your device — no cloud, no internet required.
+- **Bug Fixes & Stability Improvements**: Minor bug fixes and stability enhancements to ensure a smoother, more reliable app experience.
 
-Thank you for choosing KeyHive! Stay tuned for future updates!
+Thank you for using KeyHive! We’re committed to continually improving your password management experience. Stay tuned for future updates and features!
+
 
 ## Download
 
