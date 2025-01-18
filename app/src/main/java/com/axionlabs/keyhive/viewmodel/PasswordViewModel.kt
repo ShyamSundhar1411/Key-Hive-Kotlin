@@ -2,73 +2,98 @@ package com.axionlabs.keyhive.viewmodel
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.map
 import com.axionlabs.keyhive.model.Password
 import com.axionlabs.keyhive.repository.PasswordDbRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class PasswordViewModel @Inject constructor(private val repository: PasswordDbRepository) :
     ViewModel() {
-    private val _passwordList = MutableStateFlow<List<Password>>(emptyList())
-    val passwordList = _passwordList.asStateFlow()
-    private val _filteredPasswordList = MutableStateFlow<List<Password>>(emptyList())
-    val filteredPasswordList = _filteredPasswordList.asStateFlow()
+
     private val _filterType = MutableStateFlow("All")
     val filterType = _filterType.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            repository.getAllPasswords().distinctUntilChanged().collect {
-                if (it.isEmpty()) {
-                    _passwordList.value = emptyList()
-                    _filteredPasswordList.value = emptyList()
-                } else {
-                    _passwordList.value = it
-                    _filteredPasswordList.value = it
-                }
-            }
+    private val _passwordList = MutableStateFlow<Flow<PagingData<Password>>>(emptyFlow())
+    val passwordList = _passwordList.asStateFlow()
+    private var debounceJob: Job? = null
+    private val _passwordsVisibility = mutableStateOf<Map<String, Boolean>>(emptyMap())
+    val passwordsVisibility = _passwordsVisibility
+    private val _isBulkImportInProgress = MutableStateFlow(false)
+    val isBulkImportInProgress = _isBulkImportInProgress.asStateFlow()
+    fun setPasswordVisibility(passwordId: String, isVisible: Boolean) {
+        _passwordsVisibility.value = _passwordsVisibility.value.toMutableMap().apply {
+            put(passwordId, isVisible)
         }
     }
+
     fun insertPassword(password: Password) = viewModelScope.launch {
         repository.insertPassword(password)
     }
 
-    fun updatePassword(password: Password) = viewModelScope.launch {
-        repository.updatePassword(password)
+    init{
+        viewModelScope.launch {
+            _passwordList.value =
+                repository.getPagedPasswords(_filterType.value).cachedIn(viewModelScope)
+        }
     }
-
-    fun deletePassword(password: Password) = viewModelScope.launch {
-        repository.deletePassword(password)
-    }
-
     fun deleteAllPasswords() = viewModelScope.launch {
         repository.deleteAllPasswords()
     }
-    fun filterPasswords(filterType: String){
-        _filterType.value = filterType
+
+    fun filterPasswords(filterQuery: String) {
+        debounceJob?.cancel()
+        debounceJob = viewModelScope.launch {
+            delay(500)
+            _filterType.value = filterQuery
+            _passwordList.value = repository.getPagedPasswords(filterQuery).cachedIn(viewModelScope)
+        }
+    }
+
+    fun bulkInsertPasswords(passwords: List<Password>) {
+        _isBulkImportInProgress.value = true
         viewModelScope.launch {
-            if(filterType == "Sort by Oldest"){
-                _filteredPasswordList.value = _passwordList.value.sortedBy { it.createdAt }
-            }else if(filterType == "Sort by Latest"){
-                _filteredPasswordList.value = _passwordList.value.sortedByDescending { it.createdAt }
+            delay(200)
+            passwords.forEach { password ->
+                repository.insertPassword(password)
+
             }
-            else if(filterType == "Sort by Favorites"){
-                _filteredPasswordList.value = _passwordList.value.filter {
-                    it.isFavorite
-                }
-            }else{
-                _filteredPasswordList.value = _passwordList.value
+            _isBulkImportInProgress.value = false
+        }
+
+    }
+
+    fun getAllPasswords(): List<Password> {
+        val passwords = mutableListOf<Password>()
+        viewModelScope.launch {
+            repository.getAllPasswords()
+                .collect {
+                    passwords.addAll(it)
                 }
 
         }
+        return passwords
     }
+
+    fun updatePassword(password: Password) {
+        viewModelScope.launch {
+            repository.updatePassword(password)
+
+        }
+    }
+
 }

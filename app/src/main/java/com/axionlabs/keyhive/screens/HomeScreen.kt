@@ -1,31 +1,21 @@
 package com.axionlabs.keyhive.screens
 
 import android.util.Log
-import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.FormatListNumbered
-import androidx.compose.material.icons.filled.ImportExport
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -43,13 +33,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.axionlabs.keyhive.components.DropDownComponent
 import com.axionlabs.keyhive.components.KeyHiveAppBar
 import com.axionlabs.keyhive.components.ListPasswordsComponent
+import com.axionlabs.keyhive.components.LoaderComponent
 import com.axionlabs.keyhive.model.DropDownItem
 import com.axionlabs.keyhive.routes.Routes
-import com.axionlabs.keyhive.utils.exportPasswordsToCSV
-import com.axionlabs.keyhive.utils.shareCsvFile
 import com.axionlabs.keyhive.viewmodel.PasswordViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,8 +52,14 @@ fun HomeScreen(
     val showFilterDialog = remember {
         mutableStateOf(false)
     }
+
     val filterType = passwordViewModel.filterType.collectAsState().value
-    val passwordList = passwordViewModel.filteredPasswordList.collectAsState().value
+    val passwordList =
+        passwordViewModel.passwordList.collectAsState().value.collectAsLazyPagingItems()
+
+    val appendState = passwordList.loadState.append
+    val isBulkImportingInProgress = passwordViewModel.isBulkImportInProgress.collectAsState().value
+    val isAppending = appendState is LoadState.Loading
     val filterDropDownItems = listOf(
         DropDownItem(
             label = "All",
@@ -189,23 +186,33 @@ fun HomeScreen(
 
                 }
                 Text("Filter applied: $filterType", modifier = Modifier.padding(5.dp))
-                if(passwordList.isEmpty()){
-                    Box(
-                       modifier = Modifier.padding(10.dp).fillMaxWidth().fillMaxHeight(0.3f),
-                        contentAlignment = Alignment.Center,
 
-                    ){
-                        Text(text = "No Passwords found")
+
+                when {
+                    (isBulkImportingInProgress) -> {
+                        LoaderComponent()
                     }
+                    (isAppending) -> {
+                        LoaderComponent()
+                    }
+                    passwordList.itemCount == 0 -> {
+                        Box(
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .fillMaxWidth()
+                                .fillMaxHeight(0.3f),
+                            contentAlignment = Alignment.Center,
 
-                }
-                else{
-                    ListPasswordsComponent(modifier = Modifier, passwordList, navController)
+                            ) {
+                            Text(text = "No Passwords found")
+                        }
+                    }
+                    else -> {
+                        ListPasswordsComponent(modifier = Modifier, passwordList, navController)
+                    }
                 }
 
             }
-
-
         }
     }
 }

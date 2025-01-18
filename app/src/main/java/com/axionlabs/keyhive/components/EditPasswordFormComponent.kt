@@ -38,6 +38,7 @@ import com.axionlabs.keyhive.model.Password
 import com.axionlabs.keyhive.routes.Routes
 import com.axionlabs.keyhive.ui.theme.RedA100
 import com.axionlabs.keyhive.utils.CryptoUtils
+import com.axionlabs.keyhive.viewmodel.PasswordDetailViewModel
 import com.axionlabs.keyhive.viewmodel.PasswordViewModel
 import java.util.Date
 
@@ -46,7 +47,7 @@ import java.util.Date
 fun EditPasswordFormComponent(
     modifier: Modifier = Modifier,
     password: Password,
-    passwordViewModel: PasswordViewModel = hiltViewModel(),
+    passwordDetailViewModel: PasswordDetailViewModel = hiltViewModel(),
     navController: NavController
 ) {
     val userNameState = rememberSaveable { mutableStateOf(password.username) }
@@ -183,14 +184,15 @@ fun EditPasswordFormComponent(
                             password.enableBiometricAuth = enableBiometricAuthState.value
                             password.isFavorite = favoriteState.value
                             password.updatedAt = Date()
-                            passwordViewModel.updatePassword(password)
+                            passwordDetailViewModel.updatePassword(password)
+                            navController.navigateUp()
                             Toast.makeText(
                                 context,
                                 "Password Updated Successfully",
                                 Toast.LENGTH_SHORT
                             )
                                 .show()
-                            navController.popBackStack()
+
                         } else {
                             Toast.makeText(
                                 context,
@@ -219,14 +221,15 @@ fun EditPasswordFormComponent(
                         if (password.enableBiometricAuth) {
                             showBiometricAuthDialog.value = true
                         } else {
-                            passwordViewModel.deletePassword(password)
+                            passwordDetailViewModel.deletePassword(password)
+                            navController.navigateUp()
                             Toast.makeText(
                                 context,
                                 "Password Deleted Successfully",
                                 Toast.LENGTH_SHORT
                             )
                                 .show()
-                            navController.popBackStack()
+
                         }
                     },
                     modifier = modifier.padding(5.dp),
@@ -254,7 +257,7 @@ fun EditPasswordFormComponent(
         BiometricAuthComponent(
             onSuccess = {
 
-                passwordViewModel.deletePassword(password)
+                passwordDetailViewModel.deletePassword(password)
                 Toast.makeText(context, "Password Deleted Successfully", Toast.LENGTH_SHORT).show()
                 navController.popBackStack()
                 showBiometricAuthDialog.value = false

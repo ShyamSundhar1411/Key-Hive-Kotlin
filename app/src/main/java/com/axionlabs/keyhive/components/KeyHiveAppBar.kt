@@ -38,6 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toFile
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.paging.PagingData
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.axionlabs.keyhive.model.DropDownItem
 import com.axionlabs.keyhive.model.Password
 import com.axionlabs.keyhive.utils.exportPasswordsToCSV
@@ -45,6 +47,8 @@ import com.axionlabs.keyhive.utils.getFileFromUri
 import com.axionlabs.keyhive.utils.importPasswordsFromCSV
 import com.axionlabs.keyhive.utils.shareCsvFile
 import com.axionlabs.keyhive.viewmodel.PasswordViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import java.io.File
 import java.io.InputStream
 
@@ -68,7 +72,8 @@ fun KeyHiveAppBar(
     val showImportDialog = remember {
         mutableStateOf(false)
     }
-    val passwordList = passwordViewModel.passwordList.collectAsState().value
+
+    val passwordList = passwordViewModel.passwordList.collectAsState().value.collectAsLazyPagingItems()
     val context = LocalContext.current
     val dropDownItems = listOf(
         DropDownItem(
@@ -78,7 +83,7 @@ fun KeyHiveAppBar(
                 passwordViewModel.deleteAllPasswords()
                 Toast.makeText(context,"Password Deleted Successfully",Toast.LENGTH_SHORT).show()
             },
-            isEnabled = passwordList.isNotEmpty()
+            isEnabled = passwordList.itemCount > 0
         ),
         DropDownItem(
             label = "Export to CSV",
@@ -86,7 +91,7 @@ fun KeyHiveAppBar(
             onClick = {
                 val csvFile = exportPasswordsToCSV(
                     context = navController.context,
-                    passwords = passwordViewModel.passwordList.value
+                    passwords = passwordViewModel.getAllPasswords()
                 )
                 if (csvFile != null) {
                     Toast.makeText(
@@ -104,7 +109,7 @@ fun KeyHiveAppBar(
                     ).show()
                 }
             },
-            isEnabled = passwordList.isNotEmpty()
+            isEnabled = passwordList.itemCount > 0
         ),
         DropDownItem(
             label = "Import from CSV",
@@ -154,18 +159,6 @@ fun KeyHiveAppBar(
         }
     )
     if(showImportDialog.value) {
-        CSVImportDialog(
-            showImportDialog, onFileSelected = { uri ->
-                val file = getFileFromUri(uri,context)
-                if (file != null){
-                    Log.e("On File Selected",file.toString())
-                    importPasswordsFromCSV(file)
-                    Toast.makeText(context,"Passwords imported successfully",Toast.LENGTH_SHORT).show()
-                }
-                else{
-                    Toast.makeText(context,"Failed to import passwords",Toast.LENGTH_SHORT).show()
-                }
-            }
-        )
+        CSVImportDialog(showImportDialog, passwordViewModel)
     }
 }

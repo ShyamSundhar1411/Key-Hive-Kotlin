@@ -2,13 +2,21 @@ package com.axionlabs.keyhive.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.axionlabs.keyhive.model.Password
 import com.axionlabs.keyhive.repository.PasswordDbRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,47 +26,21 @@ class SearchViewModel @Inject constructor(private val repository: PasswordDbRepo
     val searchText = _searchText.asStateFlow()
     private val _isSearching = MutableStateFlow(false)
     val isSearching = _isSearching.asStateFlow()
-    private val _filteredPasswords = MutableStateFlow<List<Password>>(emptyList())
-    private var allPasswords: List<Password> = emptyList()
 
-    val filteredPasswords = _filteredPasswords.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            repository.getAllPasswords().collect {
-                if (it.isEmpty()) {
-                    allPasswords = emptyList()
-                } else {
-                    allPasswords = it
-                }
-            }
-            filterPasswords(allPasswords, _searchText.value)
-        }
-    }
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+    val filteredPasswords: Flow<PagingData<Password>> = _searchText
+        .debounce(300).distinctUntilChanged().onStart {
+            _isSearching.value = true
+            emit("")
+        }.flatMapLatest { query ->
+            _isSearching.value = true
+            repository.filterPasswords(query)
+        }.onEach {
+            _isSearching.value = false
+        }.cachedIn(viewModelScope)
 
     fun updateSearchQuery(query: String) {
         _searchText.value = query
-        _isSearching.value = query.isNotEmpty()
-        viewModelScope.launch {
-            filterPasswords(allPasswords, query)
-        }
-
-    }
-
-    private suspend fun filterPasswords(passwords: List<Password>, query: String) {
-        delay(500)
-        _filteredPasswords.value = if (query.isEmpty()) {
-            passwords
-        } else {
-            passwords.filter {
-                (it.username.contains(query, ignoreCase = true)) || (it.type.contains(
-                    query,
-                    ignoreCase = true
-                ))
-            }
-        }
-
-        _isSearching.value = false
     }
 
 }

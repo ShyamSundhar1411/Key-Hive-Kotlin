@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.axionlabs.keyhive.components.KeyHiveAppBar
 import com.axionlabs.keyhive.components.ListPasswordsComponent
 import com.axionlabs.keyhive.components.SearchFormComponent
@@ -52,9 +53,8 @@ fun SearchScreen(navController: NavController, searchViewModel: SearchViewModel 
                 if (isSearching) {
                     CircularProgressIndicator(modifier = Modifier.padding(16.dp))
                 } else {
-                    val filteredPasswordList =
-                        searchViewModel.filteredPasswords.collectAsState().value
-                    if(filteredPasswordList.isEmpty() && searchText.isNotEmpty()){
+                    val filteredPasswordList = searchViewModel.filteredPasswords.collectAsLazyPagingItems()
+                    if(filteredPasswordList.itemCount == 0 && searchText.isNotEmpty()){
                         Box(
                             modifier = Modifier.padding(10.dp).fillMaxSize(0.5f),
                             contentAlignment = Alignment.Center,
