@@ -66,21 +66,28 @@ fun AddPasswordFormComponent(
             CommonTextField(
                 valueState = userNameState,
                 placeholder = "Username*",
-                onAction = KeyboardActions { keyboardController?.hide() }
+                onAction = KeyboardActions { keyboardController?.hide() },
+                onValueChange = {
+                    userNameState.value = it
+                }
             )
 
 
             PasswordTextField(
                 valueState = passwordState,
                 placeholder = "Password*",
-                onAction = KeyboardActions { keyboardController?.hide() }
+                onAction = KeyboardActions { keyboardController?.hide() },
+
             )
 
 
             CommonTextField(
                 valueState = typeState,
                 placeholder = "Website/App*",
-                onAction = KeyboardActions { keyboardController?.hide() }
+                onAction = KeyboardActions { keyboardController?.hide() },
+                onValueChange = {
+                    typeState.value = it
+                }
             )
 
             CommonTextField(
@@ -88,7 +95,10 @@ fun AddPasswordFormComponent(
                 placeholder = "Description",
                 maxLines = 3,
                 singleLine = false,
-                onAction = KeyboardActions { keyboardController?.hide() }
+                onAction = KeyboardActions { keyboardController?.hide() },
+                onValueChange = {
+                    typeState.value = it
+                }
             )
 
             Column(

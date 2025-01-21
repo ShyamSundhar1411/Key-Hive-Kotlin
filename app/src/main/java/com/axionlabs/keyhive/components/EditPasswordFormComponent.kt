@@ -88,6 +88,9 @@ fun EditPasswordFormComponent(
                     }
                     userNameState.value = ""
                     keyboardController?.hide()
+                },
+                onValueChange = {
+                    userNameState.value = it
                 }
             )
 
@@ -113,6 +116,9 @@ fun EditPasswordFormComponent(
                     }
                     typeState.value = ""
                     keyboardController?.hide()
+                },
+                onValueChange = {
+                    typeState.value = it
                 }
             )
 
@@ -128,7 +134,10 @@ fun EditPasswordFormComponent(
                     keyboardController?.hide()
                 },
                 maxLines = 3,
-                singleLine = false
+                singleLine = false,
+                onValueChange = {
+                    descriptionState.value = it
+                }
             )
             Column(
                 modifier = modifier.padding(5.dp),
