@@ -1,33 +1,51 @@
 package com.axionlabs.keyhive.utils
 
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Environment
+import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.util.Log
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
 import com.axionlabs.keyhive.model.ImportCSVResponse
 import com.axionlabs.keyhive.model.Password
+import java.io.BufferedReader
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.FileWriter
+import java.io.InputStreamReader
 import java.util.Date
 
-fun exportPasswordsToCSV(context: Context, passwords: List<Password>): File? {
+fun exportPasswordsToCSV(context: Context, passwords: List<Password>): Uri? {
     return try {
-        val downloadsFolder = File(context.filesDir.toString() + "/downloads")
-        if (!downloadsFolder.exists()) downloadsFolder.mkdirs()
+
         val filename = "passwords" + System.currentTimeMillis() + ".csv"
-        val csvFile = File(downloadsFolder, filename)
-        val writer = FileWriter(csvFile)
-        writer.append("App/Service,Username,Password,Description\n")
-        passwords.forEach { password ->
-            writer.append("${password.type},${password.username},${CryptoUtils().decrypt(password.password)},${password.description}\n")
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+            put(MediaStore.MediaColumns.MIME_TYPE, "text/csv")
+            put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOCUMENTS)
         }
-        writer.flush()
-        writer.close()
-        csvFile
+        val resolver = context.contentResolver
+        val uri = resolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
+        uri?.let {
+            resolver.openOutputStream(it)?.use { outputStream ->
+                outputStream.write("App/Service,Username,Password,Description\n".toByteArray())
+                passwords.forEach { password ->
+                    val csvLine = "${password.type},${password.username}," +
+                            "${CryptoUtils().decrypt(password.password)},${password.description}\n"
+                    outputStream.write(csvLine.toByteArray())
+                }
+                outputStream.flush()
+            }
+        }
+
+        Log.d("CSV_EXPORT", "Exported CSV at $uri")
+        uri
+
     } catch (e: Exception) {
         e.printStackTrace()
         Log.e("CSV_EXPORT_ERROR", "Error exporting passwords to CSV", e)
@@ -36,12 +54,7 @@ fun exportPasswordsToCSV(context: Context, passwords: List<Password>): File? {
     }
 }
 
-fun shareCsvFile(context: Context, file: File) {
-    val uri = FileProvider.getUriForFile(
-        context,
-        context.applicationContext.packageName + ".fileprovider",
-        file
-    )
+fun shareCsvFile(context: Context, uri: Uri) {
     val sendIntent = Intent(
         Intent.ACTION_SEND
     ).apply {
@@ -52,46 +65,53 @@ fun shareCsvFile(context: Context, file: File) {
     val shareIntent = Intent.createChooser(sendIntent, null)
     startActivity(context, shareIntent, null)
 }
-fun getFileFromUri(uri: Uri, context: Context): File?{
-    var file: File?=  null
-    try{
-        val inputStream = context.contentResolver.openInputStream(uri)
-        val fileName = uri.lastPathSegment ?: "imported_file.csv"
-        file = File(context.cacheDir, fileName)
-        val outputStream = FileOutputStream(file)
-        inputStream?.copyTo(outputStream)
-        inputStream?.close()
-        outputStream.close()
 
-    }catch (e: Exception){
-        e.printStackTrace()
+
+
+fun getFileNameFromUri(context: Context, uri: Uri): String? {
+    var name: String? = null
+    context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+        if (cursor.moveToFirst()) {
+            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            if (nameIndex != -1) {
+                name = cursor.getString(nameIndex)
+            }
+        }
     }
-    return file
+    return name
 }
-fun importPasswordsFromCSV(file: File): ImportCSVResponse {
+
+fun importPasswordsFromCSV(context: Context, uri: Uri): ImportCSVResponse {
     val importedPasswords = mutableListOf<Password>()
-    var response: ImportCSVResponse
+    var response = ImportCSVResponse(
+        errorMessage = "Unknown error occurred.",
+        successMessage = "",
+        statusCode = 500,
+        passwords = importedPasswords
+    )
 
     try {
-        val fileInputStream = FileInputStream(file)
-        val reader = fileInputStream.bufferedReader()
-        val headerLine = reader.readLine()
-        val expectedHeader = "App/Service,Username,Password,Description"
-        Log.d("CSV_IMPORT_HEADER", headerLine ?: "null")
+        context.contentResolver.openInputStream(uri)?.use { inputStream ->
 
-        when {
+            val reader = BufferedReader(InputStreamReader(inputStream))
+            val headerLine = reader.readLine()
 
-            headerLine == null -> {
-                response = ImportCSVResponse(
-                    errorMessage = "Empty CSV File",
+            val expectedHeader = "App/Service,Username,Password,Description"
+
+            Log.d("CSV_IMPORT_HEADER", headerLine ?: "null")
+
+            // Validate header
+            if (headerLine == null) {
+                return ImportCSVResponse(
+                    errorMessage = "Empty CSV file.",
                     successMessage = "",
                     statusCode = 400,
-                    passwords = importedPasswords,
+                    passwords = importedPasswords
                 )
             }
 
-            headerLine != expectedHeader -> {
-                response = ImportCSVResponse(
+            if (headerLine.trim() != expectedHeader.trim()) {
+                return ImportCSVResponse(
                     errorMessage = "Invalid CSV format. Expected header: $expectedHeader",
                     successMessage = "",
                     statusCode = 400,
@@ -99,64 +119,65 @@ fun importPasswordsFromCSV(file: File): ImportCSVResponse {
                 )
             }
 
-            else -> {
-                var line: String?
-                while (reader.readLine().also { line = it } != null) {
-                    val values = line!!.split(",")
-                    Log.d("CSV_IMPORT_VALUE", values.size.toString())
-                    if (values.size >= 4) {
-                        val password = Password(
-                            type = values[0],
-                            username = values[1],
-                            password = CryptoUtils().encrypt(values[2]),
-                            description = values[3],
-                            createdAt = Date(),
-                            updatedAt = Date()
-                        )
-                        importedPasswords.add(password)
-                    } else {
-                        Log.e("CSV_IMPORT_ERROR", "Malformed line: $line")
-                        response = ImportCSVResponse(
-                            errorMessage = "Malformed line: $line",
-                            successMessage = "",
-                            statusCode = 400,
-                            passwords = importedPasswords
-                        )
-                        break
-                    }
-                }
+            // Process CSV lines
+            var line: String?
+            var malformedLines = 0
 
+            while (reader.readLine().also { line = it } != null) {
+                val values = line!!.split(",").map { it.trim() }
 
-                reader.close()
-                fileInputStream.close()
-
-
-                if (importedPasswords.isNotEmpty()) {
-                    response = ImportCSVResponse(
-                        errorMessage = "",
-                        successMessage = "Successfully imported ${importedPasswords.size} passwords.",
-                        statusCode = 200,
-                        passwords = importedPasswords
+                if (values.size >= 4) {
+                    val password = Password(
+                        type = values[0],
+                        username = values[1],
+                        password = CryptoUtils().encrypt(values[2]),
+                        description = values[3],
+                        createdAt = Date(),
+                        updatedAt = Date()
                     )
-                    Log.d("CSV_IMPORT", "Successfully imported ${importedPasswords.size} passwords.")
+                    importedPasswords.add(password)
                 } else {
-                    response = ImportCSVResponse(
-                        errorMessage = "No valid passwords imported.",
-                        successMessage = "",
-                        statusCode = 400,
-                        passwords = importedPasswords
-                    )
+                    malformedLines++
+                    Log.e("CSV_IMPORT_ERROR", "Malformed line ignored: $line")
                 }
             }
+
+            reader.close()
+
+            // Final response
+            response = if (importedPasswords.isNotEmpty()) {
+                ImportCSVResponse(
+                    errorMessage = if (malformedLines > 0) "$malformedLines malformed line(s) ignored." else "",
+                    successMessage = "Successfully imported ${importedPasswords.size} passwords.",
+                    statusCode = 200,
+                    passwords = importedPasswords
+                )
+            } else {
+                ImportCSVResponse(
+                    errorMessage = "No valid passwords imported.",
+                    successMessage = "",
+                    statusCode = 400,
+                    passwords = importedPasswords
+                )
+            }
+
+        } ?: run {
+            response = ImportCSVResponse(
+                errorMessage = "Failed to open CSV file.",
+                successMessage = "",
+                statusCode = 500,
+                passwords = importedPasswords
+            )
         }
+
     } catch (e: Exception) {
+        Log.e("CSV_IMPORT_ERROR", "Error importing CSV", e)
         response = ImportCSVResponse(
-            errorMessage = "Error importing passwords from CSV: ${e.message}",
+            errorMessage = "Error importing CSV: ${e.message}",
             successMessage = "",
             statusCode = 500,
             passwords = importedPasswords
         )
-        Log.e("CSV_IMPORT_ERROR", "Error importing passwords from CSV", e)
     }
 
     return response

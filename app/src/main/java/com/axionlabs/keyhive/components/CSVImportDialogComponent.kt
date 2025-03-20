@@ -8,28 +8,20 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.axionlabs.keyhive.utils.getFileFromUri
 import com.axionlabs.keyhive.utils.importPasswordsFromCSV
 import com.axionlabs.keyhive.viewmodel.PasswordViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -49,15 +41,15 @@ fun CSVImportDialog(
     val isLoading = remember { mutableStateOf(false) }
 
 
-    val filePickerLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        if (uri != null) {
-            result.value = uri
-            showDialog.value = false
-            isLoading.value = true
-            CoroutineScope(Dispatchers.IO).launch {
-                val file = getFileFromUri(uri, context)
-                if (file != null) {
-                    val response = importPasswordsFromCSV(file)
+    val filePickerLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+            if (uri != null) {
+                result.value = uri
+                showDialog.value = false
+                isLoading.value = true
+                CoroutineScope(Dispatchers.IO).launch {
+
+                    val response = importPasswordsFromCSV(context, uri)
                     val passwords = response.passwords.map { password -> password }
 
 
@@ -69,25 +61,19 @@ fun CSVImportDialog(
                         } else {
                             Log.d("Passwords", passwords.toString())
                             passwordViewModel.bulkInsertPasswords(passwords)
-                            val message = "Code - ${response.statusCode}: ${response.successMessage}"
+                            val message =
+                                "Code - ${response.statusCode}: ${response.successMessage}"
                             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                         }
                     }
-                } else {
-
-                    withContext(Dispatchers.Main) {
-                        isLoading.value = false
-                        Toast.makeText(context, "Failed to Import Passwords", Toast.LENGTH_SHORT).show()
-                    }
                 }
+            } else {
+
+                Toast.makeText(context, "No File Selected", Toast.LENGTH_SHORT).show()
             }
-        } else {
-
-            Toast.makeText(context, "No File Selected", Toast.LENGTH_SHORT).show()
         }
-    }
 
-    // Alert dialog UI for CSV import
+
     AlertDialog(
         onDismissRequest = { showDialog.value = false },
         title = { Text(text = "Import Passwords from CSV") },

@@ -11,8 +11,10 @@ import androidx.paging.cachedIn
 import com.axionlabs.keyhive.model.Password
 import com.axionlabs.keyhive.repository.PasswordDbRepository
 import com.axionlabs.keyhive.utils.exportPasswordsToCSV
+import com.axionlabs.keyhive.utils.getFileNameFromUri
 import com.axionlabs.keyhive.utils.shareCsvFile
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -20,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -83,19 +86,25 @@ class PasswordViewModel @Inject constructor(private val repository: PasswordDbRe
             val passwords = repository.getAllPasswords()
             Log.d("PasswordViewModel", "Passwords: $passwords.size")
             if (passwords.isNotEmpty()) {
-                val csvFile = exportPasswordsToCSV(context, passwords)
-                if (csvFile != null) {
-                    Toast.makeText(
-                        context,
-                        "Passwords exported to ${csvFile.absolutePath}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    shareCsvFile(context, csvFile)
-                } else {
-                    Toast.makeText(context, "Failed to export passwords", Toast.LENGTH_SHORT).show()
+                val uri = exportPasswordsToCSV(context, passwords)
+                withContext(Dispatchers.Main){
+                    if (uri != null) {
+                        val fileName = getFileNameFromUri(context, uri)
+                        Toast.makeText(
+                            context,
+                            "Passwords exported to ${fileName ?: uri}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        shareCsvFile(context, uri)
+                    } else {
+                        Toast.makeText(context, "Failed to export passwords", Toast.LENGTH_SHORT).show()
+                    }
                 }
+
             } else {
-                Toast.makeText(context, "No passwords to export", Toast.LENGTH_SHORT).show()
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "No passwords to export", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
