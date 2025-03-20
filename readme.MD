@@ -1,6 +1,6 @@
 # KeyHive
 
-![KeyHive Feature Graphic](screenshots/Key-Hive-Feature-Graphic-Coming-Soon.png)
+![KeyHive Feature Graphic](screenshots/Key-Hive-Feature-Graphic.png)
 
 KeyHive is a cloud-free password manager designed to help you securely store, manage, and organize your passwords locally on your device. With a focus on privacy and an intuitive user experience, KeyHive ensures your sensitive information remains offline and safe.
 
