@@ -88,7 +88,7 @@ fun CSVImportDialog(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text("Ensure the CSV file has no extra columns or invalid data.")
                 if (isLoading.value) {
-                    // Show loading indicator while the file is being processed
+
                     CircularProgressIndicator(modifier = Modifier.wrapContentWidth())
                 }
             }

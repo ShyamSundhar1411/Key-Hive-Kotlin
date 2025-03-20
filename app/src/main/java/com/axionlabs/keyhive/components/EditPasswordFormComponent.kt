@@ -39,7 +39,6 @@ import com.axionlabs.keyhive.routes.Routes
 import com.axionlabs.keyhive.ui.theme.RedA100
 import com.axionlabs.keyhive.utils.CryptoUtils
 import com.axionlabs.keyhive.viewmodel.PasswordDetailViewModel
-import com.axionlabs.keyhive.viewmodel.PasswordViewModel
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
