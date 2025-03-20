@@ -14,8 +14,8 @@ android {
         applicationId = "com.axionlabs.keyhive"
         minSdk = 29
         targetSdk = 34
-        versionCode = 5
-        versionName = "2.2"
+        versionCode = 6
+        versionName = "2.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
