@@ -97,7 +97,7 @@ fun AddPasswordFormComponent(
                 singleLine = false,
                 onAction = KeyboardActions { keyboardController?.hide() },
                 onValueChange = {
-                    typeState.value = it
+                    descriptionState.value = it
                 }
             )
 
