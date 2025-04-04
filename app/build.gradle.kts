@@ -4,11 +4,22 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android.gradle.plugin)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.ktlint)
 }
-
+ktlint {
+    version.set("1.5.0")
+    android.set(true)
+    outputToConsole.set(true)
+    ignoreFailures.set(false)
+    filter {
+        exclude("**/generated/**")
+        exclude("**/build/**")
+        include("**/src/**/*.kt")
+    }
+}
 android {
     namespace = "com.axionlabs.keyhive"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.axionlabs.keyhive"
