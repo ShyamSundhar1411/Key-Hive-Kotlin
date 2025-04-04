@@ -1,0 +1,17 @@
+# Root EditorConfig configuration
+root = true
+
+# Apply settings to Kotlin and KTS files
+[*.{kt,kts}]
+charset = utf-8
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+end_of_line = lf
+trim_trailing_whitespace = true
+
+# Disable specific Ktlint rules
+ktlint_standard_import-ordering = disabled        # Ignore wildcard imports
+ktlint_standard_filename = disabled               # Ignore PascalCase file naming
+ktlint_standard_function-naming = disabled        # Ignore camelCase function naming
+ktlint_standard_backing-property-naming = disabled
