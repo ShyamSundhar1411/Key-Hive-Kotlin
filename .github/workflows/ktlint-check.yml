@@ -1,0 +1,46 @@
+name: Ktlint Check
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  ktlint:
+    name: Run Ktlint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: gradle
+
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v3
+
+      - name: Grant Execute Permission to Gradlew
+        run: chmod +x gradlew
+
+      - name: Run Ktlint Check
+        run: ./gradlew ktlintCheck
+
+      - name: Upload Ktlint Report (if it fails)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ktlint-report
+          path: "**/build/reports/ktlint/"
