@@ -8,7 +8,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.axionlabs.keyhive.model.Password
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PasswordDao {
@@ -31,18 +30,19 @@ interface PasswordDao {
     suspend fun deleteAllPasswords()
 
     @Query("SELECT * from password_tbl")
-    fun getPagedPasswords(): PagingSource<Int,Password>
+    fun getPagedPasswords(): PagingSource<Int, Password>
 
     @Query("SELECT * from password_tbl ORDER BY created_at ASC")
-    fun getPagedPasswordsByOldest(): PagingSource<Int,Password>
+    fun getPagedPasswordsByOldest(): PagingSource<Int, Password>
 
     @Query("SELECT * from password_tbl ORDER BY created_at DESC")
-    fun getPagedPasswordsByLatest(): PagingSource<Int,Password>
+    fun getPagedPasswordsByLatest(): PagingSource<Int, Password>
 
     @Query("SELECT * from password_tbl where is_favorite = 1")
-    fun getPagedFavoritePasswords(): PagingSource<Int,Password>
+    fun getPagedFavoritePasswords(): PagingSource<Int, Password>
 
-    @Query("SELECT * from password_tbl where type LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%' OR username LIKE '%' || :searchQuery || '%'")
-    fun filterPasswords(searchQuery: String): PagingSource<Int,Password>
-
+    @Query(
+        "SELECT * from password_tbl where type LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%' OR username LIKE '%' || :searchQuery || '%'",
+    )
+    fun filterPasswords(searchQuery: String): PagingSource<Int, Password>
 }

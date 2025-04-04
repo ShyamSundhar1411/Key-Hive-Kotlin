@@ -1,6 +1,5 @@
 package com.axionlabs.keyhive.components
 
-
 import android.content.Intent
 import android.provider.Settings
 import android.util.Log
@@ -23,100 +22,101 @@ import com.axionlabs.keyhive.LocalActivity
 import com.axionlabs.keyhive.utils.checkExistence
 import com.axionlabs.keyhive.utils.getVersion
 
-
 @Composable
 fun BiometricAuthComponent(
     onSuccess: () -> Unit = {},
     onError: () -> Unit = {},
     title: String = "KeyHive Authenticator",
-    subtitle: String = "Unlock to use KeyHive"
+    subtitle: String = "Unlock to use KeyHive",
 ) {
     val context = LocalContext.current
     val activity = LocalActivity.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val isBiometricAuthenticated = remember {
-        mutableStateOf(false)
-    }
+    val isBiometricAuthenticated =
+        remember {
+            mutableStateOf(false)
+        }
     val executor = ContextCompat.getMainExecutor(context)
-    val launcherIntent = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = { result ->
-            run {
-                when (result.resultCode) {
-                    1 -> {
-                        Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
-                        isBiometricAuthenticated.value = true
+    val launcherIntent =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartActivityForResult(),
+            onResult = { result ->
+                run {
+                    when (result.resultCode) {
+                        1 -> {
+                            Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
+                            isBiometricAuthenticated.value = true
+                        }
+
+                        else -> {
+                            Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show()
+                            isBiometricAuthenticated.value = false
+                            onError.invoke()
+                        }
                     }
-
-
-                    else -> {
-                        Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show()
-                        isBiometricAuthenticated.value = false
-                        onError.invoke()
-                    }
-
                 }
-            }
-        }
-    )
-    val biometricPrompt = BiometricPrompt(
-        activity,
-        executor,
-        object : BiometricPrompt.AuthenticationCallback() {
-            override fun onAuthenticationError(
-                errorCode: Int,
-                errString: CharSequence
-            ) {
-                super.onAuthenticationError(errorCode, errString)
-                Log.d("Error", errorCode.toString() + errString.toString())
-                onError.invoke()
-            }
+            },
+        )
+    val biometricPrompt =
+        BiometricPrompt(
+            activity,
+            executor,
+            object : BiometricPrompt.AuthenticationCallback() {
+                override fun onAuthenticationError(
+                    errorCode: Int,
+                    errString: CharSequence,
+                ) {
+                    super.onAuthenticationError(errorCode, errString)
+                    Log.d("Error", errorCode.toString() + errString.toString())
+                    onError.invoke()
+                }
 
-            override fun onAuthenticationFailed() {
-                super.onAuthenticationFailed()
-                Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show()
-            }
+                override fun onAuthenticationFailed() {
+                    super.onAuthenticationFailed()
+                    Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show()
+                }
 
-            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                super.onAuthenticationSucceeded(result)
-                onSuccess.invoke()
-            }
-        }
-    )
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    super.onAuthenticationSucceeded(result)
+                    onSuccess.invoke()
+                }
+            },
+        )
     val biometricManager = BiometricManager.from(context)
     val biometricTrigger = {
-        biometricManager.checkExistence(onSuccess = {
+        biometricManager.checkExistence(
+            onSuccess = {
+                val biometricPromptInfo =
+                    BiometricPrompt.PromptInfo
+                        .Builder()
+                        .setTitle(title)
+                        .setSubtitle(subtitle)
+                        .setAllowedAuthenticators(it or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+                        .build()
 
-            val biometricPromptInfo =
-                BiometricPrompt.PromptInfo.Builder().setTitle(title)
-                    .setSubtitle(subtitle)
-                    .setAllowedAuthenticators(it or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
-                    .build()
-
-            biometricPrompt.authenticate(
-                biometricPromptInfo
-            )
-        }, openSettings = {
-            getVersion(aboveVersion9 = {
-                val intent = Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
-                    putExtra(
-                        Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
-                        BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.BIOMETRIC_STRONG
-                    )
-                }
-                launcherIntent.launch(intent)
-
-
-            }, belowVersion10 = {
-                val intent = Intent(Settings.ACTION_SECURITY_SETTINGS)
-                activity.startActivity(intent)
-
-            })
-        },
+                biometricPrompt.authenticate(
+                    biometricPromptInfo,
+                )
+            },
+            openSettings = {
+                getVersion(aboveVersion9 = {
+                    val intent =
+                        Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
+                            putExtra(
+                                Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
+                                BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.BIOMETRIC_STRONG,
+                            )
+                        }
+                    launcherIntent.launch(intent)
+                }, belowVersion10 = {
+                    val intent = Intent(Settings.ACTION_SECURITY_SETTINGS)
+                    activity.startActivity(intent)
+                })
+            },
             onError = {
                 Log.d("On Error", "Triggered")
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-            }
+            },
         )
     }
     LaunchedEffect(key1 = lifecycleOwner.lifecycle.currentState) {
@@ -125,18 +125,18 @@ fun BiometricAuthComponent(
         }
     }
     DisposableEffect(lifecycleOwner) {
-        val lifecycleObserver = object : DefaultLifecycleObserver {
+        val lifecycleObserver =
+            object : DefaultLifecycleObserver {
+                override fun onPause(owner: LifecycleOwner) {
+                    isBiometricAuthenticated.value = false
+                }
 
-            override fun onPause(owner: LifecycleOwner) {
-                isBiometricAuthenticated.value = false
-            }
-
-            override fun onResume(owner: LifecycleOwner) {
-                if (!isBiometricAuthenticated.value) {
-                    biometricTrigger.invoke()
+                override fun onResume(owner: LifecycleOwner) {
+                    if (!isBiometricAuthenticated.value) {
+                        biometricTrigger.invoke()
+                    }
                 }
             }
-        }
         lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(lifecycleObserver)

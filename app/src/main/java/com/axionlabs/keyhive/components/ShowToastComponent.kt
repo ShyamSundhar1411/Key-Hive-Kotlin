@@ -5,8 +5,9 @@ import android.widget.Toast
 import androidx.compose.runtime.Composable
 
 @Composable
-fun ShowToastComponent(context: Context, message: String) {
-
+fun ShowToastComponent(
+    context: Context,
+    message: String,
+) {
     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-
 }

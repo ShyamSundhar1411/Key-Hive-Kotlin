@@ -29,7 +29,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CSVImportDialog(
@@ -40,7 +39,6 @@ fun CSVImportDialog(
     val context = LocalContext.current
     val isLoading = remember { mutableStateOf(false) }
 
-
     val filePickerLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
             if (uri != null) {
@@ -48,10 +46,8 @@ fun CSVImportDialog(
                 showDialog.value = false
                 isLoading.value = true
                 CoroutineScope(Dispatchers.IO).launch {
-
                     val response = importPasswordsFromCSV(context, uri)
                     val passwords = response.passwords.map { password -> password }
-
 
                     withContext(Dispatchers.Main) {
                         isLoading.value = false
@@ -68,11 +64,9 @@ fun CSVImportDialog(
                     }
                 }
             } else {
-
                 Toast.makeText(context, "No File Selected", Toast.LENGTH_SHORT).show()
             }
         }
-
 
     AlertDialog(
         onDismissRequest = { showDialog.value = false },
@@ -88,7 +82,6 @@ fun CSVImportDialog(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text("Ensure the CSV file has no extra columns or invalid data.")
                 if (isLoading.value) {
-
                     CircularProgressIndicator(modifier = Modifier.wrapContentWidth())
                 }
             }
@@ -98,7 +91,7 @@ fun CSVImportDialog(
                 onClick = {
                     Log.e("Launched", "File Intent")
                     filePickerLauncher.launch(arrayOf("*/*"))
-                }
+                },
             ) {
                 Text("Select CSV File")
             }
@@ -107,6 +100,6 @@ fun CSVImportDialog(
             TextButton(onClick = { showDialog.value = false }) {
                 Text("Cancel")
             }
-        }
+        },
     )
 }

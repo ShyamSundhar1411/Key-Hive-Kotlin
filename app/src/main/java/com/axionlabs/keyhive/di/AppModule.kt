@@ -16,16 +16,18 @@ import javax.inject.Singleton
 class AppModule {
     @Provides
     @Singleton
-    fun providePasswordDao(passwordDatabase: PasswordDatabase): PasswordDao =
-        passwordDatabase.passwordDao()
+    fun providePasswordDao(passwordDatabase: PasswordDatabase): PasswordDao = passwordDatabase.passwordDao()
 
     @Provides
     @Singleton
-    fun providePasswordDatabase(@ApplicationContext context: Context): PasswordDatabase =
-        Room.databaseBuilder(
-            context, PasswordDatabase::class.java,
-            "password_db"
-        ).fallbackToDestructiveMigration()
+    fun providePasswordDatabase(
+        @ApplicationContext context: Context,
+    ): PasswordDatabase =
+        Room
+            .databaseBuilder(
+                context,
+                PasswordDatabase::class.java,
+                "password_db",
+            ).fallbackToDestructiveMigration()
             .build()
-
 }

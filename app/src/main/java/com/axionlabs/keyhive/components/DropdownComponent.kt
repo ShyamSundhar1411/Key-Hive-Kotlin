@@ -26,28 +26,29 @@ import com.axionlabs.keyhive.model.DropDownItem
 @Composable
 fun DropDownComponent(
     showDropdown: MutableState<Boolean>,
-    items:  List<DropDownItem>,
-    dropdownWidth: Dp = 160.dp
-    ){
-    val expanded = remember {
-        mutableStateOf(true)
-    }
+    items: List<DropDownItem>,
+    dropdownWidth: Dp = 160.dp,
+) {
+    val expanded =
+        remember {
+            mutableStateOf(true)
+        }
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentSize(Alignment.TopEnd)
-            .padding(top = 45.dp, end = 20.dp)
-
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .wrapContentSize(Alignment.TopEnd)
+                .padding(top = 45.dp, end = 20.dp),
     ) {
         DropdownMenu(
             expanded = expanded.value,
             onDismissRequest = {
                 expanded.value = false
-
             },
-            modifier = Modifier
-                .width(dropdownWidth)
-                .background(Color.White)
+            modifier =
+                Modifier
+                    .width(dropdownWidth)
+                    .background(Color.White),
         ) {
             items.forEach { item ->
                 DropdownMenuItem(
@@ -56,12 +57,12 @@ fun DropDownComponent(
                             Icon(
                                 imageVector = item.icon,
                                 contentDescription = item.label,
-                                tint = if (item.isEnabled) Color.Black else Color.Gray
+                                tint = if (item.isEnabled) Color.Black else Color.Gray,
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                             Text(
                                 text = item.label,
-                                color = if (item.isEnabled) Color.Black else Color.Gray
+                                color = if (item.isEnabled) Color.Black else Color.Gray,
                             )
                         }
                     },
@@ -71,10 +72,9 @@ fun DropDownComponent(
                             showDropdown.value = false
                             item.onClick()
                         }
-                    }
+                    },
                 )
             }
-
         }
     }
 }

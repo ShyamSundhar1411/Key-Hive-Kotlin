@@ -17,7 +17,7 @@ import com.axionlabs.keyhive.viewmodel.PasswordViewModel
 @Composable
 fun AddPasswordScreen(
     navController: NavController,
-    passwordViewModel: PasswordViewModel = hiltViewModel()
+    passwordViewModel: PasswordViewModel = hiltViewModel(),
 ) {
     Scaffold(topBar = {
         KeyHiveAppBar(
@@ -28,13 +28,13 @@ fun AddPasswordScreen(
             passwordViewModel = passwordViewModel,
             onButtonClicked = {
                 navController.popBackStack()
-            }
+            },
         )
     }) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding), contentAlignment = Alignment.Center) {
             AddPasswordFormComponent(
                 navController = navController,
-                passwordViewModel = passwordViewModel
+                passwordViewModel = passwordViewModel,
             )
         }
     }

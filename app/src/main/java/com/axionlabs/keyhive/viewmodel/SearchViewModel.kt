@@ -20,27 +20,32 @@ import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
 @HiltViewModel
-class SearchViewModel @Inject constructor(private val repository: PasswordDbRepository) :
-    ViewModel() {
-    private val _searchText = MutableStateFlow("")
-    val searchText = _searchText.asStateFlow()
-    private val _isSearching = MutableStateFlow(false)
-    val isSearching = _isSearching.asStateFlow()
+class SearchViewModel
+    @Inject
+    constructor(
+        private val repository: PasswordDbRepository,
+    ) : ViewModel() {
+        private val _searchText = MutableStateFlow("")
+        val searchText = _searchText.asStateFlow()
+        private val _isSearching = MutableStateFlow(false)
+        val isSearching = _isSearching.asStateFlow()
 
-    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
-    val filteredPasswords: Flow<PagingData<Password>> = _searchText
-        .debounce(300).distinctUntilChanged().onStart {
-            _isSearching.value = true
-            emit("")
-        }.flatMapLatest { query ->
-            _isSearching.value = true
-            repository.filterPasswords(query)
-        }.onEach {
-            _isSearching.value = false
-        }.cachedIn(viewModelScope)
+        @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+        val filteredPasswords: Flow<PagingData<Password>> =
+            _searchText
+                .debounce(300)
+                .distinctUntilChanged()
+                .onStart {
+                    _isSearching.value = true
+                    emit("")
+                }.flatMapLatest { query ->
+                    _isSearching.value = true
+                    repository.filterPasswords(query)
+                }.onEach {
+                    _isSearching.value = false
+                }.cachedIn(viewModelScope)
 
-    fun updateSearchQuery(query: String) {
-        _searchText.value = query
+        fun updateSearchQuery(query: String) {
+            _searchText.value = query
+        }
     }
-
-}

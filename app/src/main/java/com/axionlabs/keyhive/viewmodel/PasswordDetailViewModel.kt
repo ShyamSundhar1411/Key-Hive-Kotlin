@@ -11,20 +11,29 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PasswordDetailViewModel @Inject constructor(private val repository: PasswordDbRepository): ViewModel() {
-    private val _password = MutableStateFlow<Password?>(null)
-    val passwordState = _password.asStateFlow()
-    fun getPasswordById(id: String) {
-        viewModelScope.launch {_password.value = repository.getPasswordById(id)}
-    }
-    fun updatePassword(password: Password) = viewModelScope.launch {
-        viewModelScope.launch {
-            repository.updatePassword(password)
+class PasswordDetailViewModel
+    @Inject
+    constructor(
+        private val repository: PasswordDbRepository,
+    ) : ViewModel() {
+        private val _password = MutableStateFlow<Password?>(null)
+        val passwordState = _password.asStateFlow()
+
+        fun getPasswordById(id: String) {
+            viewModelScope.launch { _password.value = repository.getPasswordById(id) }
         }
+
+        fun updatePassword(password: Password) =
+            viewModelScope.launch {
+                viewModelScope.launch {
+                    repository.updatePassword(password)
+                }
+            }
+
+        fun deletePassword(password: Password) =
+            viewModelScope.launch {
+                viewModelScope.launch {
+                    repository.deletePassword(password)
+                }
+            }
     }
-    fun deletePassword(password: Password) = viewModelScope.launch {
-        viewModelScope.launch {
-            repository.deletePassword(password)
-        }
-    }
-}

@@ -32,7 +32,7 @@ fun CommonTextField(
     imeActions: ImeAction = ImeAction.Next,
     keyboardType: KeyboardType = KeyboardType.Text,
     singleLine: Boolean = true,
-    maxLines: Int = 1
+    maxLines: Int = 1,
 ) {
     OutlinedTextField(
         value = valueState.value,
@@ -41,13 +41,16 @@ fun CommonTextField(
         maxLines = maxLines,
         singleLine = singleLine,
         keyboardActions = onAction,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = keyboardType, imeAction = imeActions,
-        ),
+        keyboardOptions =
+            KeyboardOptions(
+                keyboardType = keyboardType,
+                imeAction = imeActions,
+            ),
         shape = RoundedCornerShape(15.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 10.dp, end = 10.dp)
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(start = 10.dp, end = 10.dp),
     )
 }
 
@@ -59,7 +62,7 @@ fun PasswordTextField(
     imeActions: ImeAction = ImeAction.Next,
     keyboardType: KeyboardType = KeyboardType.Text,
     singleLine: Boolean = true,
-    maxLines: Int = 1
+    maxLines: Int = 1,
 ) {
     val showPassword = remember { mutableStateOf(false) }
 
@@ -70,25 +73,29 @@ fun PasswordTextField(
         maxLines = maxLines,
         singleLine = singleLine,
         keyboardActions = onAction,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = keyboardType, imeAction = imeActions,
-        ),
+        keyboardOptions =
+            KeyboardOptions(
+                keyboardType = keyboardType,
+                imeAction = imeActions,
+            ),
         shape = RoundedCornerShape(15.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 10.dp, end = 10.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(start = 10.dp, end = 10.dp),
         visualTransformation = if (showPassword.value) VisualTransformation.None else PasswordVisualTransformation(),
         trailingIcon = {
-            val icon = if (showPassword.value) {
-                Icons.Filled.Visibility
-            } else {
-                Icons.Filled.VisibilityOff
-            }
+            val icon =
+                if (showPassword.value) {
+                    Icons.Filled.Visibility
+                } else {
+                    Icons.Filled.VisibilityOff
+                }
             IconButton(onClick = {
                 showPassword.value = !showPassword.value
             }) {
                 Icon(imageVector = icon, contentDescription = "Visibility")
             }
-        }
+        },
     )
 }

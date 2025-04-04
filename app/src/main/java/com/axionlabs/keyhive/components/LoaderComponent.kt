@@ -13,10 +13,11 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun LoaderComponent(modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .wrapContentSize(align = Alignment.Center)
-            .padding(16.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .wrapContentSize(align = Alignment.Center)
+                .padding(16.dp),
     ) {
         CircularProgressIndicator()
     }

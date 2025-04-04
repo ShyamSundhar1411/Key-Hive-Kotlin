@@ -27,19 +27,19 @@ fun ListPasswordsComponent(
     modifier: Modifier = Modifier,
     passwords: LazyPagingItems<Password>,
     navController: NavController,
-    passwordViewModel: PasswordViewModel = hiltViewModel()
+    passwordViewModel: PasswordViewModel = hiltViewModel(),
 ) {
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(20.dp)
+        modifier =
+            modifier
+                .fillMaxSize()
+                .padding(20.dp),
     ) {
-
         LazyColumn {
             items(
                 passwords.itemCount,
                 key = passwords.itemKey { password -> password.id },
-                contentType = passwords.itemContentType { "Passwords" }
+                contentType = passwords.itemContentType { "Passwords" },
             ) { index ->
                 val password = passwords[index]
                 if (password != null) {
@@ -52,11 +52,12 @@ fun ListPasswordsComponent(
                         passwordViewModel.setPasswordVisibility(password.id.toString(), true)
                     }
                     AnimatedVisibility(
-                        enter = slideInVertically(
-                            initialOffsetY = { 100 },
-                            animationSpec = tween(600, delayMillis = delayMillis.toInt())
-                        ),
-                        visible = isVisible
+                        enter =
+                            slideInVertically(
+                                initialOffsetY = { 100 },
+                                animationSpec = tween(600, delayMillis = delayMillis.toInt()),
+                            ),
+                        visible = isVisible,
                     ) {
                         PasswordCardComponent(
                             password = password,
@@ -66,11 +67,10 @@ fun ListPasswordsComponent(
                             },
                             onFavoriteClick = { password ->
                                 passwordViewModel.updatePassword(password)
-                            }
+                            },
                         )
                     }
                 }
-
             }
         }
     }

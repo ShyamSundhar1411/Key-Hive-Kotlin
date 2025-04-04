@@ -9,6 +9,7 @@ import javax.crypto.spec.SecretKeySpec
 class CryptoUtils {
     private val secretKey = Constants.PRIVATE_SECRET_KEY
     private val secretIV = Constants.PRIVATE_SECRET_IV
+
     fun encrypt(password: String): String {
         val iv = IvParameterSpec(this.secretIV.toByteArray())
         val keySpec = SecretKeySpec(this.secretKey.toByteArray(), "AES")
@@ -29,5 +30,4 @@ class CryptoUtils {
         val decrypted = cipher.doFinal(decodedByte)
         return String(decrypted)
     }
-
 }

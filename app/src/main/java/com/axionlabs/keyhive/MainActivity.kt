@@ -1,6 +1,5 @@
 package com.axionlabs.keyhive
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -24,15 +23,13 @@ import com.axionlabs.keyhive.screens.PermissionPromptScreen
 import com.axionlabs.keyhive.ui.theme.KeyHiveTheme
 import dagger.hilt.android.AndroidEntryPoint
 
-val LocalActivity = compositionLocalOf<FragmentActivity> {
-    error("Error")
-}
-
-
+val LocalActivity =
+    compositionLocalOf<FragmentActivity> {
+        error("Error")
+    }
 
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
-
     private val permissionGranted = mutableStateOf(false)
 
     private val requestPermissionLauncher =
@@ -43,13 +40,11 @@ class MainActivity : FragmentActivity() {
             } else {
                 Log.d("MainActivity", "Permission Denied ")
                 permissionGranted.value = false
-
             }
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             requestStoragePermission()
@@ -72,15 +67,13 @@ class MainActivity : FragmentActivity() {
         }
     }
 
-
     override fun onResume() {
         super.onResume()
-
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             permissionGranted.value = ContextCompat.checkSelfPermission(
                 this,
-                android.Manifest.permission.READ_EXTERNAL_STORAGE
+                android.Manifest.permission.READ_EXTERNAL_STORAGE,
             ) == android.content.pm.PackageManager.PERMISSION_GRANTED
         } else {
             permissionGranted.value = true
@@ -92,7 +85,7 @@ class MainActivity : FragmentActivity() {
     private fun requestStoragePermission() {
         if (ContextCompat.checkSelfPermission(
                 this,
-                android.Manifest.permission.READ_EXTERNAL_STORAGE
+                android.Manifest.permission.READ_EXTERNAL_STORAGE,
             ) == android.content.pm.PackageManager.PERMISSION_GRANTED
         ) {
             permissionGranted.value = true
@@ -100,16 +93,16 @@ class MainActivity : FragmentActivity() {
             requestPermissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
         }
     }
+
     private fun openAppSettings() {
-        val intent = Intent(
-            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-            Uri.fromParts("package", packageName, null)
-        )
+        val intent =
+            Intent(
+                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.fromParts("package", packageName, null),
+            )
         startActivity(intent)
     }
-
 }
-
 
 @Composable
 fun KeyHiveApp() {

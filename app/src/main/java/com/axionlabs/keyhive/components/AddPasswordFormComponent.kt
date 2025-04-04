@@ -41,7 +41,7 @@ import java.util.Date
 fun AddPasswordFormComponent(
     modifier: Modifier = Modifier,
     passwordViewModel: PasswordViewModel = hiltViewModel(),
-    navController: NavController
+    navController: NavController,
 ) {
     val userNameState = rememberSaveable { mutableStateOf("") }
     val passwordState = rememberSaveable { mutableStateOf("") }
@@ -52,15 +52,16 @@ fun AddPasswordFormComponent(
     val keyboardController = LocalSoftwareKeyboardController.current
     val context = LocalContext.current
 
-    val isValidForm = remember(userNameState.value, passwordState.value, typeState.value) {
-        userNameState.value.trim().isNotEmpty() &&
+    val isValidForm =
+        remember(userNameState.value, passwordState.value, typeState.value) {
+            userNameState.value.trim().isNotEmpty() &&
                 passwordState.value.trim().isNotEmpty() &&
                 typeState.value.trim().isNotEmpty()
-    }
+        }
 
     LazyColumn(
         modifier = modifier.padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         item {
             CommonTextField(
@@ -69,17 +70,14 @@ fun AddPasswordFormComponent(
                 onAction = KeyboardActions { keyboardController?.hide() },
                 onValueChange = {
                     userNameState.value = it
-                }
+                },
             )
-
 
             PasswordTextField(
                 valueState = passwordState,
                 placeholder = "Password*",
                 onAction = KeyboardActions { keyboardController?.hide() },
-
             )
-
 
             CommonTextField(
                 valueState = typeState,
@@ -87,7 +85,7 @@ fun AddPasswordFormComponent(
                 onAction = KeyboardActions { keyboardController?.hide() },
                 onValueChange = {
                     typeState.value = it
-                }
+                },
             )
 
             CommonTextField(
@@ -98,93 +96,97 @@ fun AddPasswordFormComponent(
                 onAction = KeyboardActions { keyboardController?.hide() },
                 onValueChange = {
                     descriptionState.value = it
-                }
+                },
             )
 
             Column(
                 modifier = modifier.padding(5.dp),
                 horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
+                Row(
+                    modifier =
+                        modifier
+                            .fillMaxWidth()
+                            .padding(5.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    FilterChip(
+                        onClick = {
+                            enableBiometricAuthState.value = !enableBiometricAuthState.value
+                        },
+                        label = { Text("Lock with Biometric") },
+                        selected = enableBiometricAuthState.value,
+                        leadingIcon =
+                            if (enableBiometricAuthState.value) {
+                                {
+                                    Icon(
+                                        imageVector = Icons.Filled.Done,
+                                        contentDescription = "Done icon",
+                                    )
+                                }
+                            } else {
+                                null
+                            },
+                    )
 
-                   Row(
-                       modifier = modifier
-                           .fillMaxWidth()
-                           .padding(5.dp),
-                       horizontalArrangement = Arrangement.spacedBy(10.dp)
-                   ) {
-                       FilterChip(
-                           onClick = {
-                               enableBiometricAuthState.value = !enableBiometricAuthState.value
-                           },
-                           label = { Text("Lock with Biometric") },
-                           selected = enableBiometricAuthState.value,
-                           leadingIcon = if (enableBiometricAuthState.value) {
-                               {
-                                   Icon(
-                                       imageVector = Icons.Filled.Done,
-                                       contentDescription = "Done icon"
-                                   )
-                               }
-                           } else null
-                       )
-
-                       FilterChip(
-                           onClick = { isFavorite.value = !isFavorite.value },
-                           label = { Text("Add to Favorites") },
-                           selected = isFavorite.value,
-                           leadingIcon = if (isFavorite.value) {
-                               {
-                                   Icon(
-                                       imageVector = Icons.Filled.Done,
-                                       contentDescription = "Done icon"
-                                   )
-                               }
-                           } else null
-                       )
-                   }
-
+                    FilterChip(
+                        onClick = { isFavorite.value = !isFavorite.value },
+                        label = { Text("Add to Favorites") },
+                        selected = isFavorite.value,
+                        leadingIcon =
+                            if (isFavorite.value) {
+                                {
+                                    Icon(
+                                        imageVector = Icons.Filled.Done,
+                                        contentDescription = "Done icon",
+                                    )
+                                }
+                            } else {
+                                null
+                            },
+                    )
+                }
             }
-
 
             Row(modifier = modifier.padding(start = 10.dp)) {
                 FilledTonalButton(
                     onClick = {
                         if (isValidForm) {
                             val encryptedPassword = CryptoUtils().encrypt(passwordState.value)
-                            val password = Password(
-                                username = userNameState.value,
-                                password = encryptedPassword,
-                                description = descriptionState.value,
-                                type = typeState.value,
-                                enableBiometricAuth = enableBiometricAuthState.value,
-                                isFavorite = isFavorite.value,
-                                createdAt = Date(),
-                                updatedAt = Date()
-                            )
+                            val password =
+                                Password(
+                                    username = userNameState.value,
+                                    password = encryptedPassword,
+                                    description = descriptionState.value,
+                                    type = typeState.value,
+                                    enableBiometricAuth = enableBiometricAuthState.value,
+                                    isFavorite = isFavorite.value,
+                                    createdAt = Date(),
+                                    updatedAt = Date(),
+                                )
                             passwordViewModel.insertPassword(password)
-                            Toast.makeText(
-                                context,
-                                "Password Added Successfully",
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
+                            Toast
+                                .makeText(
+                                    context,
+                                    "Password Added Successfully",
+                                    Toast.LENGTH_SHORT,
+                                ).show()
                             navController.navigate(Routes.HomeScreen.name)
                         } else {
-                            Toast.makeText(
-                                context,
-                                "Please fill all the fields",
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
+                            Toast
+                                .makeText(
+                                    context,
+                                    "Please fill all the fields",
+                                    Toast.LENGTH_SHORT,
+                                ).show()
                         }
                     },
-
-                    ) {
+                ) {
                     Icon(
                         imageVector = Icons.Filled.Add,
                         contentDescription = "Add Password",
-                        modifier = Modifier.size(ButtonDefaults.IconSize)
+                        modifier = Modifier.size(ButtonDefaults.IconSize),
                     )
                     Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
                     Text(text = "Add")

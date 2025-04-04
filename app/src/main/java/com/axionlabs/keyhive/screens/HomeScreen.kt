@@ -47,64 +47,69 @@ import com.axionlabs.keyhive.viewmodel.PasswordViewModel
 @Composable
 fun HomeScreen(
     navController: NavController,
-    passwordViewModel: PasswordViewModel = hiltViewModel()
+    passwordViewModel: PasswordViewModel = hiltViewModel(),
 ) {
-    val showFilterDialog = remember {
-        mutableStateOf(false)
-    }
+    val showFilterDialog =
+        remember {
+            mutableStateOf(false)
+        }
 
     val filterType = passwordViewModel.filterType.collectAsState().value
     val passwordList =
-        passwordViewModel.passwordList.collectAsState().value.collectAsLazyPagingItems()
+        passwordViewModel.passwordList
+            .collectAsState()
+            .value
+            .collectAsLazyPagingItems()
 
     val appendState = passwordList.loadState.append
     val isBulkImportingInProgress = passwordViewModel.isBulkImportInProgress.collectAsState().value
     val isAppending = appendState is LoadState.Loading
-    val filterDropDownItems = listOf(
-        DropDownItem(
-            label = "All",
-            icon = Icons.Default.FormatListNumbered,
-            onClick = {
-                Log.d("HomeScreen", "All filter clicked")
+    val filterDropDownItems =
+        listOf(
+            DropDownItem(
+                label = "All",
+                icon = Icons.Default.FormatListNumbered,
+                onClick = {
+                    Log.d("HomeScreen", "All filter clicked")
 
-                passwordViewModel.filterPasswords("All")
-            },
-            isEnabled = true
-        ),
-        DropDownItem(
-            label = "Sort by Oldest",
-            icon = Icons.Default.ArrowDropDown,
-            onClick = {
-                Log.d("HomeScreen", "Sort by Oldest filter clicked")
+                    passwordViewModel.filterPasswords("All")
+                },
+                isEnabled = true,
+            ),
+            DropDownItem(
+                label = "Sort by Oldest",
+                icon = Icons.Default.ArrowDropDown,
+                onClick = {
+                    Log.d("HomeScreen", "Sort by Oldest filter clicked")
 
-                passwordViewModel.filterPasswords("Sort by Oldest")
-            },
-            isEnabled = true
-        ),
-        DropDownItem(
-            label = "Sort by Latest",
-            icon = Icons.Default.ArrowDropUp,
-            isEnabled = true,
-            onClick = {
-                Log.d("HomeScreen", "Sort by Newest filter clicked")
+                    passwordViewModel.filterPasswords("Sort by Oldest")
+                },
+                isEnabled = true,
+            ),
+            DropDownItem(
+                label = "Sort by Latest",
+                icon = Icons.Default.ArrowDropUp,
+                isEnabled = true,
+                onClick = {
+                    Log.d("HomeScreen", "Sort by Newest filter clicked")
 
-                passwordViewModel.filterPasswords("Sort by Latest")
-            },
-        ),
-        DropDownItem(
-            label = "Sort by Favorites",
-            icon = Icons.Default.FavoriteBorder,
-            isEnabled = true,
-            onClick = {
-                Log.d(
-                    "HomeScreen",
-                    "Sort by Favorites filter clicked"
-                )
+                    passwordViewModel.filterPasswords("Sort by Latest")
+                },
+            ),
+            DropDownItem(
+                label = "Sort by Favorites",
+                icon = Icons.Default.FavoriteBorder,
+                isEnabled = true,
+                onClick = {
+                    Log.d(
+                        "HomeScreen",
+                        "Sort by Favorites filter clicked",
+                    )
 
-                passwordViewModel.filterPasswords("Sort by Favorites")
-            }
+                    passwordViewModel.filterPasswords("Sort by Favorites")
+                },
+            ),
         )
-    )
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -114,12 +119,11 @@ fun HomeScreen(
                 isMainScreen = true,
                 onSideIconClicked = {
                     navController.navigate(Routes.SearchScreen.name)
-                }
+                },
             )
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
-
                 onClick = {
                     navController.navigate(Routes.AddPasswordScreen.name)
                 },
@@ -129,64 +133,59 @@ fun HomeScreen(
                 icon = {
                     Icon(
                         imageVector = Icons.Filled.Add,
-                        contentDescription = "Add Password"
+                        contentDescription = "Add Password",
                     )
                 },
             )
-
-        }
+        },
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
                 horizontalAlignment = Alignment.Start,
             ) {
-
-
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.Center
+                    verticalArrangement = Arrangement.Center,
                 ) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(5.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(5.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
                             text = "My Passwords",
-                            style = MaterialTheme.typography.titleLarge
+                            style = MaterialTheme.typography.titleLarge,
                         )
 
                         IconButton(
                             onClick = {
                                 showFilterDialog.value = !showFilterDialog.value
-                            }
-
+                            },
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.FilterAlt,
                                 contentDescription = "Filter",
-                                tint = Color.Black
+                                tint = Color.Black,
                             )
                             if (showFilterDialog.value) {
                                 DropDownComponent(
                                     showFilterDialog,
                                     filterDropDownItems,
-                                    dropdownWidth = 250.dp
+                                    dropdownWidth = 250.dp,
                                 )
                             }
                         }
                     }
-
-
                 }
                 Text("Filter applied: $filterType", modifier = Modifier.padding(5.dp))
-
 
                 when {
                     (isBulkImportingInProgress) -> {
@@ -197,13 +196,13 @@ fun HomeScreen(
                     }
                     passwordList.itemCount == 0 -> {
                         Box(
-                            modifier = Modifier
-                                .padding(10.dp)
-                                .fillMaxWidth()
-                                .fillMaxHeight(0.3f),
+                            modifier =
+                                Modifier
+                                    .padding(10.dp)
+                                    .fillMaxWidth()
+                                    .fillMaxHeight(0.3f),
                             contentAlignment = Alignment.Center,
-
-                            ) {
+                        ) {
                             Text(text = "No Passwords found")
                         }
                     }
@@ -211,7 +210,6 @@ fun HomeScreen(
                         ListPasswordsComponent(modifier = Modifier, passwordList, navController)
                     }
                 }
-
             }
         }
     }

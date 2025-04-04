@@ -17,16 +17,17 @@ import com.axionlabs.keyhive.viewmodel.SearchViewModel
 @Composable
 fun SearchFormComponent(
     modifier: Modifier = Modifier,
-    searchViewModel: SearchViewModel = hiltViewModel()
+    searchViewModel: SearchViewModel = hiltViewModel(),
 ) {
     val query = rememberSaveable { mutableStateOf("") }
-    val validateQuery = remember(query.value) {
-        query.value.trim().isNotEmpty()
-    }
+    val validateQuery =
+        remember(query.value) {
+            query.value.trim().isNotEmpty()
+        }
     val keyboardController = LocalSoftwareKeyboardController.current
     Column(modifier = modifier) {
         Row(
-            modifier = modifier.padding(5.dp)
+            modifier = modifier.padding(5.dp),
         ) {
             CommonTextField(
                 valueState = query,
@@ -35,14 +36,14 @@ fun SearchFormComponent(
                     query.value = it
                     searchViewModel.updateSearchQuery(it)
                 },
-                onAction = KeyboardActions {
-                    if (!validateQuery) {
-                        return@KeyboardActions
-                    }
-                    searchViewModel.updateSearchQuery(query.value.trim())
-                    keyboardController?.hide()
-
-                }
+                onAction =
+                    KeyboardActions {
+                        if (!validateQuery) {
+                            return@KeyboardActions
+                        }
+                        searchViewModel.updateSearchQuery(query.value.trim())
+                        keyboardController?.hide()
+                    },
             )
         }
     }

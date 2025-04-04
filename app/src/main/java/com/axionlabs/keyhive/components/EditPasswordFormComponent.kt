@@ -1,6 +1,5 @@
 package com.axionlabs.keyhive.components
 
-
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -47,107 +46,116 @@ fun EditPasswordFormComponent(
     modifier: Modifier = Modifier,
     password: Password,
     passwordDetailViewModel: PasswordDetailViewModel = hiltViewModel(),
-    navController: NavController
+    navController: NavController,
 ) {
     val userNameState = rememberSaveable { mutableStateOf(password.username) }
     val passwordState =
         rememberSaveable { mutableStateOf(CryptoUtils().decrypt(password.password)) }
     val descriptionState = rememberSaveable { mutableStateOf(password.description ?: "") }
     val typeState = rememberSaveable { mutableStateOf(password.type) }
-    val favoriteState = rememberSaveable {
-        mutableStateOf(password.isFavorite)
-    }
+    val favoriteState =
+        rememberSaveable {
+            mutableStateOf(password.isFavorite)
+        }
 
     val keyboardController = LocalSoftwareKeyboardController.current
-    val validateUserName = remember(userNameState.value) {
-        userNameState.value.trim().isNotEmpty()
-    }
-    val validatePassword = remember(passwordState.value) {
-        passwordState.value.trim().isNotEmpty()
-    }
-    val enableBiometricAuthState = remember {
-        mutableStateOf(password.enableBiometricAuth)
-    }
-    val validateTypeState = remember(typeState.value) {
-        typeState.value.trim().isNotEmpty()
-    }
+    val validateUserName =
+        remember(userNameState.value) {
+            userNameState.value.trim().isNotEmpty()
+        }
+    val validatePassword =
+        remember(passwordState.value) {
+            passwordState.value.trim().isNotEmpty()
+        }
+    val enableBiometricAuthState =
+        remember {
+            mutableStateOf(password.enableBiometricAuth)
+        }
+    val validateTypeState =
+        remember(typeState.value) {
+            typeState.value.trim().isNotEmpty()
+        }
     val context = LocalContext.current
-    val showBiometricAuthDialog = remember {
-        mutableStateOf(false)
-    }
+    val showBiometricAuthDialog =
+        remember {
+            mutableStateOf(false)
+        }
 
     LazyColumn(modifier = modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         item {
             CommonTextField(
                 valueState = userNameState,
                 placeholder = "Username*",
-                onAction = KeyboardActions {
-                    if (!validateUserName) {
-                        return@KeyboardActions
-                    }
-                    userNameState.value = ""
-                    keyboardController?.hide()
-                },
+                onAction =
+                    KeyboardActions {
+                        if (!validateUserName) {
+                            return@KeyboardActions
+                        }
+                        userNameState.value = ""
+                        keyboardController?.hide()
+                    },
                 onValueChange = {
                     userNameState.value = it
-                }
+                },
             )
 
             PasswordTextField(
                 valueState = passwordState,
                 placeholder = "Password*",
-                onAction = KeyboardActions {
-                    if (!validatePassword) {
-                        return@KeyboardActions
-                    }
-                    passwordState.value = ""
-                    keyboardController?.hide()
-                }
+                onAction =
+                    KeyboardActions {
+                        if (!validatePassword) {
+                            return@KeyboardActions
+                        }
+                        passwordState.value = ""
+                        keyboardController?.hide()
+                    },
             )
-
 
             CommonTextField(
                 valueState = typeState,
                 placeholder = "Website/App*",
-                onAction = KeyboardActions {
-                    if (!validatePassword) {
-                        return@KeyboardActions
-                    }
-                    typeState.value = ""
-                    keyboardController?.hide()
-                },
+                onAction =
+                    KeyboardActions {
+                        if (!validatePassword) {
+                            return@KeyboardActions
+                        }
+                        typeState.value = ""
+                        keyboardController?.hide()
+                    },
                 onValueChange = {
                     typeState.value = it
-                }
+                },
             )
-
 
             CommonTextField(
                 valueState = descriptionState,
                 placeholder = "Description",
-                onAction = KeyboardActions {
-                    if (!validatePassword) {
-                        return@KeyboardActions
-                    }
-                    passwordState.value = ""
-                    keyboardController?.hide()
-                },
+                onAction =
+                    KeyboardActions {
+                        if (!validatePassword) {
+                            return@KeyboardActions
+                        }
+                        passwordState.value = ""
+                        keyboardController?.hide()
+                    },
                 maxLines = 3,
                 singleLine = false,
                 onValueChange = {
                     descriptionState.value = it
-                }
+                },
             )
             Column(
                 modifier = modifier.padding(5.dp),
                 horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Row(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(5.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    modifier =
+                        modifier
+                            .fillMaxWidth()
+                            .padding(5.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
                     FilterChip(
                         onClick = {
@@ -155,31 +163,36 @@ fun EditPasswordFormComponent(
                         },
                         label = { Text("Lock with Biometric") },
                         selected = enableBiometricAuthState.value,
-                        leadingIcon = if (enableBiometricAuthState.value) {
-                            {
-                                Icon(
-                                    imageVector = Icons.Filled.Done,
-                                    contentDescription = "Done icon"
-                                )
-                            }
-                        } else null
+                        leadingIcon =
+                            if (enableBiometricAuthState.value) {
+                                {
+                                    Icon(
+                                        imageVector = Icons.Filled.Done,
+                                        contentDescription = "Done icon",
+                                    )
+                                }
+                            } else {
+                                null
+                            },
                     )
 
                     FilterChip(
                         onClick = { favoriteState.value = !favoriteState.value },
                         label = { Text("Add to Favorites") },
                         selected = favoriteState.value,
-                        leadingIcon = if (favoriteState.value) {
-                            {
-                                Icon(
-                                    imageVector = Icons.Filled.Done,
-                                    contentDescription = "Done icon"
-                                )
-                            }
-                        } else null
+                        leadingIcon =
+                            if (favoriteState.value) {
+                                {
+                                    Icon(
+                                        imageVector = Icons.Filled.Done,
+                                        contentDescription = "Done icon",
+                                    )
+                                }
+                            } else {
+                                null
+                            },
                     )
                 }
-
             }
             Row(modifier = modifier.padding(start = 10.dp)) {
                 FilledTonalButton(
@@ -194,35 +207,33 @@ fun EditPasswordFormComponent(
                             password.updatedAt = Date()
                             passwordDetailViewModel.updatePassword(password)
                             navController.navigateUp()
-                            Toast.makeText(
-                                context,
-                                "Password Updated Successfully",
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
-
+                            Toast
+                                .makeText(
+                                    context,
+                                    "Password Updated Successfully",
+                                    Toast.LENGTH_SHORT,
+                                ).show()
                         } else {
-                            Toast.makeText(
-                                context,
-                                "Please fill all the fields",
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
+                            Toast
+                                .makeText(
+                                    context,
+                                    "Please fill all the fields",
+                                    Toast.LENGTH_SHORT,
+                                ).show()
                         }
-
                     },
-                    modifier = modifier.padding(5.dp)
+                    modifier = modifier.padding(5.dp),
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Update,
                         contentDescription = "Update Password",
-                        modifier = modifier.size(
-                            ButtonDefaults.IconSize
-                        )
+                        modifier =
+                            modifier.size(
+                                ButtonDefaults.IconSize,
+                            ),
                     )
                     Spacer(modifier = modifier.size(ButtonDefaults.IconSpacing))
                     Text(text = "Update")
-
                 }
                 FilledTonalButton(
                     onClick = {
@@ -231,32 +242,33 @@ fun EditPasswordFormComponent(
                         } else {
                             passwordDetailViewModel.deletePassword(password)
                             navController.navigateUp()
-                            Toast.makeText(
-                                context,
-                                "Password Deleted Successfully",
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
-
+                            Toast
+                                .makeText(
+                                    context,
+                                    "Password Deleted Successfully",
+                                    Toast.LENGTH_SHORT,
+                                ).show()
                         }
                     },
                     modifier = modifier.padding(5.dp),
-                    colors = ButtonColors(
-                        containerColor = RedA100, contentColor = Color.White,
-                        disabledContainerColor = Color.Red.copy(alpha = 0.1f),
-                        disabledContentColor = Color.White.copy(alpha = 0.1f)
-                    )
+                    colors =
+                        ButtonColors(
+                            containerColor = RedA100,
+                            contentColor = Color.White,
+                            disabledContainerColor = Color.Red.copy(alpha = 0.1f),
+                            disabledContentColor = Color.White.copy(alpha = 0.1f),
+                        ),
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Delete,
                         contentDescription = "Delete Password",
-                        modifier = modifier.size(
-                            ButtonDefaults.IconSize
-                        )
+                        modifier =
+                            modifier.size(
+                                ButtonDefaults.IconSize,
+                            ),
                     )
                     Spacer(modifier = modifier.size(ButtonDefaults.IconSpacing))
                     Text(text = "Delete")
-
                 }
             }
         }
@@ -264,23 +276,22 @@ fun EditPasswordFormComponent(
     if (showBiometricAuthDialog.value) {
         BiometricAuthComponent(
             onSuccess = {
-
                 passwordDetailViewModel.deletePassword(password)
                 Toast.makeText(context, "Password Deleted Successfully", Toast.LENGTH_SHORT).show()
                 navController.popBackStack()
                 showBiometricAuthDialog.value = false
             },
             onError = {
-
-                Toast.makeText(
-                    context,
-                    "Unable to Delete Password: Authentication Failed",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast
+                    .makeText(
+                        context,
+                        "Unable to Delete Password: Authentication Failed",
+                        Toast.LENGTH_SHORT,
+                    ).show()
                 navController.navigate(Routes.PasswordDetailScreen.name + "/${password.id}")
                 showBiometricAuthDialog.value = false
             },
-            subtitle = "Authenticate to Delete the password"
+            subtitle = "Authenticate to Delete the password",
         )
     }
 }

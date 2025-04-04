@@ -26,7 +26,10 @@ import com.axionlabs.keyhive.components.SearchFormComponent
 import com.axionlabs.keyhive.viewmodel.SearchViewModel
 
 @Composable
-fun SearchScreen(navController: NavController, searchViewModel: SearchViewModel = hiltViewModel()) {
+fun SearchScreen(
+    navController: NavController,
+    searchViewModel: SearchViewModel = hiltViewModel(),
+) {
     Scaffold(
         topBar = {
             KeyHiveAppBar(
@@ -36,15 +39,15 @@ fun SearchScreen(navController: NavController, searchViewModel: SearchViewModel 
                 isMainScreen = false,
                 onButtonClicked = {
                     navController.popBackStack()
-                }
+                },
             )
-        }
+        },
     ) {
         Surface(modifier = Modifier.padding(it)) {
             Column(
                 modifier = Modifier.padding(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
             ) {
                 SearchFormComponent()
 
@@ -54,25 +57,18 @@ fun SearchScreen(navController: NavController, searchViewModel: SearchViewModel 
                     CircularProgressIndicator(modifier = Modifier.padding(16.dp))
                 } else {
                     val filteredPasswordList = searchViewModel.filteredPasswords.collectAsLazyPagingItems()
-                    if(filteredPasswordList.itemCount == 0 && searchText.isNotEmpty()){
+                    if (filteredPasswordList.itemCount == 0 && searchText.isNotEmpty()) {
                         Box(
                             modifier = Modifier.padding(10.dp).fillMaxSize(0.5f),
                             contentAlignment = Alignment.Center,
-
-                            ){
+                        ) {
                             Text(text = "No Passwords found")
                         }
-                    }
-                    else{
+                    } else {
                         ListPasswordsComponent(modifier = Modifier, filteredPasswordList, navController)
                     }
-
-
-
                 }
-
             }
         }
-
     }
 }

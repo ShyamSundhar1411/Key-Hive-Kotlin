@@ -26,94 +26,100 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class PasswordViewModel @Inject constructor(private val repository: PasswordDbRepository) :
-    ViewModel() {
+class PasswordViewModel
+    @Inject
+    constructor(
+        private val repository: PasswordDbRepository,
+    ) : ViewModel() {
+        private val _filterType = MutableStateFlow("All")
+        val filterType = _filterType.asStateFlow()
+        private val _passwordList = MutableStateFlow<Flow<PagingData<Password>>>(emptyFlow())
+        val passwordList = _passwordList.asStateFlow()
+        private var debounceJob: Job? = null
+        private val _passwordsVisibility = mutableStateOf<Map<String, Boolean>>(emptyMap())
+        val passwordsVisibility = _passwordsVisibility
+        private val _isBulkImportInProgress = MutableStateFlow(false)
+        val isBulkImportInProgress = _isBulkImportInProgress.asStateFlow()
 
-    private val _filterType = MutableStateFlow("All")
-    val filterType = _filterType.asStateFlow()
-    private val _passwordList = MutableStateFlow<Flow<PagingData<Password>>>(emptyFlow())
-    val passwordList = _passwordList.asStateFlow()
-    private var debounceJob: Job? = null
-    private val _passwordsVisibility = mutableStateOf<Map<String, Boolean>>(emptyMap())
-    val passwordsVisibility = _passwordsVisibility
-    private val _isBulkImportInProgress = MutableStateFlow(false)
-    val isBulkImportInProgress = _isBulkImportInProgress.asStateFlow()
-    fun setPasswordVisibility(passwordId: String, isVisible: Boolean) {
-        _passwordsVisibility.value = _passwordsVisibility.value.toMutableMap().apply {
-            put(passwordId, isVisible)
+        fun setPasswordVisibility(
+            passwordId: String,
+            isVisible: Boolean,
+        ) {
+            _passwordsVisibility.value =
+                _passwordsVisibility.value.toMutableMap().apply {
+                    put(passwordId, isVisible)
+                }
         }
-    }
 
-    fun insertPassword(password: Password) = viewModelScope.launch {
-        repository.insertPassword(password)
-    }
-
-    init {
-        viewModelScope.launch {
-            _passwordList.value =
-                repository.getPagedPasswords(_filterType.value).cachedIn(viewModelScope)
-        }
-    }
-
-    fun deleteAllPasswords() = viewModelScope.launch {
-        repository.deleteAllPasswords()
-    }
-
-    fun filterPasswords(filterQuery: String) {
-        debounceJob?.cancel()
-        debounceJob = viewModelScope.launch {
-            delay(500)
-            _filterType.value = filterQuery
-            _passwordList.value = repository.getPagedPasswords(filterQuery).cachedIn(viewModelScope)
-        }
-    }
-
-    fun bulkInsertPasswords(passwords: List<Password>) {
-        _isBulkImportInProgress.value = true
-        viewModelScope.launch {
-            delay(200)
-            passwords.forEach { password ->
+        fun insertPassword(password: Password) =
+            viewModelScope.launch {
                 repository.insertPassword(password)
-
             }
-            _isBulkImportInProgress.value = false
+
+        init {
+            viewModelScope.launch {
+                _passwordList.value =
+                    repository.getPagedPasswords(_filterType.value).cachedIn(viewModelScope)
+            }
         }
 
-    }
+        fun deleteAllPasswords() =
+            viewModelScope.launch {
+                repository.deleteAllPasswords()
+            }
 
-    fun exportPasswordsToCSV(context: Context) {
-        viewModelScope.launch {
-            val passwords = repository.getAllPasswords()
-            Log.d("PasswordViewModel", "Passwords: $passwords.size")
-            if (passwords.isNotEmpty()) {
-                val uri = exportPasswordsToCSV(context, passwords)
-                withContext(Dispatchers.Main){
-                    if (uri != null) {
-                        val fileName = getFileNameFromUri(context, uri)
-                        Toast.makeText(
-                            context,
-                            "Passwords exported to ${fileName ?: uri}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        shareCsvFile(context, uri)
-                    } else {
-                        Toast.makeText(context, "Failed to export passwords", Toast.LENGTH_SHORT).show()
+        fun filterPasswords(filterQuery: String) {
+            debounceJob?.cancel()
+            debounceJob =
+                viewModelScope.launch {
+                    delay(500)
+                    _filterType.value = filterQuery
+                    _passwordList.value = repository.getPagedPasswords(filterQuery).cachedIn(viewModelScope)
+                }
+        }
+
+        fun bulkInsertPasswords(passwords: List<Password>) {
+            _isBulkImportInProgress.value = true
+            viewModelScope.launch {
+                delay(200)
+                passwords.forEach { password ->
+                    repository.insertPassword(password)
+                }
+                _isBulkImportInProgress.value = false
+            }
+        }
+
+        fun exportPasswordsToCSV(context: Context) {
+            viewModelScope.launch {
+                val passwords = repository.getAllPasswords()
+                Log.d("PasswordViewModel", "Passwords: $passwords.size")
+                if (passwords.isNotEmpty()) {
+                    val uri = exportPasswordsToCSV(context, passwords)
+                    withContext(Dispatchers.Main) {
+                        if (uri != null) {
+                            val fileName = getFileNameFromUri(context, uri)
+                            Toast
+                                .makeText(
+                                    context,
+                                    "Passwords exported to ${fileName ?: uri}",
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                            shareCsvFile(context, uri)
+                        } else {
+                            Toast.makeText(context, "Failed to export passwords", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "No passwords to export", Toast.LENGTH_SHORT).show()
                     }
                 }
+            }
+        }
 
-            } else {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "No passwords to export", Toast.LENGTH_SHORT).show()
-                }
+        fun updatePassword(password: Password) {
+            viewModelScope.launch {
+                repository.updatePassword(password)
             }
         }
     }
-
-    fun updatePassword(password: Password) {
-        viewModelScope.launch {
-            repository.updatePassword(password)
-
-        }
-    }
-
-}

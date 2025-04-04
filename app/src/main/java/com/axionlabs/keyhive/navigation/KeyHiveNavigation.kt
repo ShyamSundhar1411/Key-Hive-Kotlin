@@ -18,10 +18,9 @@ fun KeyHiveNavigation() {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = Routes.BiometricScreen.name
+        startDestination = Routes.BiometricScreen.name,
     ) {
         composable(Routes.BiometricScreen.name) {
-
             BiometricAuthComponent(
                 onSuccess = {
                     navController.navigate(Routes.HomeScreen.name) {
@@ -37,24 +36,25 @@ fun KeyHiveNavigation() {
         }
         composable(
             Routes.PasswordDetailScreen.name + "/{passwordId}",
-            arguments = listOf(navArgument(name = "passwordId") {
-                type = NavType.StringType
-            })
+            arguments =
+                listOf(
+                    navArgument(name = "passwordId") {
+                        type = NavType.StringType
+                    },
+                ),
         ) {
             val passwordId = it.arguments?.getString("passwordId")
             PasswordDetailScreen(navController = navController, passwordId.toString())
         }
         composable(
-            Routes.SearchScreen.name
+            Routes.SearchScreen.name,
         ) {
             SearchScreen(navController)
         }
         composable(
-            Routes.AddPasswordScreen.name
+            Routes.AddPasswordScreen.name,
         ) {
             AddPasswordScreen(navController)
-
         }
-
     }
 }
